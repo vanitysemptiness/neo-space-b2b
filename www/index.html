@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macro Cosmos</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-image:
+                linear-gradient(to right, #e6f3ff 1px, transparent 1px),
+                linear-gradient(to bottom, #e6f3ff 1px, transparent 1px);
+            background-size: 15px 15px;
+        }
+
+        #toolbar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <button id="squareBtn">shape</button>
+        <button id="selectBtn">select</button>
+    </div>
+    <div id="canvas-container"></div>
+    
+    <script src="https://unpkg.com/konva@9.3.14/konva.min.js"></script>
+    <script src="mouse.js"></script>
+    <script src="renderer.js"></script>
+    <script src="eventHandlers.js"></script>
+    <script src="index.js" type="module"></script>
+</body>
+</html>

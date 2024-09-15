@@ -1,0 +1,5 @@
+/* highlight the selected button so user knows which mode */
+.active {
+    background-color: blue;
+    color: white;
+}
