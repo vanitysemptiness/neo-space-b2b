@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Canvas from './components/Canvas';
 import Toolbar from './components/Toolbar';
-import DraggableColorPalette from './components/DraggableColorPalette';
+import ColorPickerButton from './components/ColorPickerButton';
 import './App.css';
 
 function App() {
@@ -17,12 +17,12 @@ function App() {
       <Toolbar
         currentTool={currentTool}
         setCurrentTool={setCurrentTool}
-      />
-      <DraggableColorPalette
-        currentColor={currentColor}
-        setCurrentColor={setCurrentColor}
-        isVisible={currentTool === 'draw'}
-      />
+      >
+        <ColorPickerButton 
+          currentColor={currentColor} 
+          setCurrentColor={setCurrentColor} 
+        />
+      </Toolbar>
     </div>
   );
 }

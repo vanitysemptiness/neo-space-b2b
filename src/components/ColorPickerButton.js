@@ -19,12 +19,19 @@ const ColorPickerButton = ({ currentColor, setCurrentColor }) => {
         '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF', '#FFFFFF', '#000000'
       ]
     });
-  }, []);
 
-  const handleColorChange = (event) => {
-    const newColor = event.target.value;
-    setCurrentColor(newColor);
-  };
+    // Set up event listener for color changes
+    const colorInput = colorInputRef.current;
+    const handleColorChange = (event) => {
+      setCurrentColor(event.target.value);
+    };
+
+    colorInput.addEventListener('change', handleColorChange);
+
+    return () => {
+      colorInput.removeEventListener('change', handleColorChange);
+    };
+  }, [setCurrentColor]);
 
   return (
     <div>
@@ -32,8 +39,7 @@ const ColorPickerButton = ({ currentColor, setCurrentColor }) => {
         type="text"
         id="colorPicker"
         ref={colorInputRef}
-        value={currentColor}
-        onChange={handleColorChange}
+        defaultValue={currentColor}
         data-coloris
         style={{ display: 'none' }}
       />

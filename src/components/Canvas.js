@@ -50,7 +50,15 @@ function Canvas({ currentTool, currentColor }) {
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = currentTool === 'draw';
       fabricCanvas.selection = currentTool === 'select';
-      fabricCanvas.freeDrawingBrush.color = currentColor;
+      
+      // Handle potential rgba color
+      if (currentColor.startsWith('rgba')) {
+        const [r, g, b, a] = currentColor.match(/\d+(\.\d+)?/g).map(Number);
+        fabricCanvas.freeDrawingBrush.color = `rgba(${r}, ${g}, ${b}, ${a})`;
+      } else {
+        fabricCanvas.freeDrawingBrush.color = currentColor;
+      }
+      
       fabricCanvas.freeDrawingBrush.width = brushSize;
 
       if (currentTool === 'draw') {
