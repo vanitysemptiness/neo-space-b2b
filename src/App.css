@@ -33,8 +33,9 @@ canvas {
   display: flex;
   align-items: center;
   position: fixed;
-  top: 10px;
-  left: 10px;
+  bottom: 20px; /* Adjust this value to increase/decrease bottom padding */
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
   background-color: rgba(255, 255, 255, 0.8);
   padding: 10px;
