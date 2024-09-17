@@ -1,114 +1,90 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { fabric } from 'fabric';
 
-function Canvas({ currentTool, currentColor }) {
+const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
   const canvasRef = useRef(null);
   const [fabricCanvas, setFabricCanvas] = useState(null);
-  const cursorCanvasRef = useRef(null);
   const [brushSize, setBrushSize] = useState(5);
 
   useEffect(() => {
-    if (canvasRef.current) {
-      const canvas = new fabric.Canvas(canvasRef.current, {
-        isDrawingMode: false,
-        width: window.innerWidth,
-        height: window.innerHeight,
-        selection: true,
-      });
-      setFabricCanvas(canvas);
+    const canvas = new fabric.Canvas(canvasRef.current, {
+      isDrawingMode: false,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      selection: true,
+    });
+    setFabricCanvas(canvas);
 
-      canvas.on('object:added', (e) => {
-        if (e.target) {
-          e.target.set('deletable', true);
+    const handleKeyDown = (e) => {
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        const activeObjects = canvas.getActiveObjects();
+        if (activeObjects.length > 0) {
+          activeObjects.forEach((obj) => {
+            canvas.remove(obj);
+          });
+          canvas.discardActiveObject().renderAll();
         }
-      });
+      }
+    };
 
-      const handleKeyDown = (e) => {
-        if (e.key === 'Backspace' || e.key === 'Delete') {
-          const activeObjects = canvas.getActiveObjects();
-          if (activeObjects.length > 0) {
-            activeObjects.forEach((obj) => {
-              if (obj.deletable) {
-                canvas.remove(obj);
-              }
-            });
-            canvas.discardActiveObject().renderAll();
-          }
-        }
-      };
+    document.addEventListener('keydown', handleKeyDown);
 
-      document.addEventListener('keydown', handleKeyDown);
-
-      return () => {
-        canvas.dispose();
-        document.removeEventListener('keydown', handleKeyDown);
-      };
-    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      canvas.dispose();
+    };
   }, []);
 
   useEffect(() => {
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = currentTool === 'draw';
       fabricCanvas.selection = currentTool === 'select';
-      
-      // Handle potential rgba color
-      if (currentColor.startsWith('rgba')) {
-        const [r, g, b, a] = currentColor.match(/\d+(\.\d+)?/g).map(Number);
-        fabricCanvas.freeDrawingBrush.color = `rgba(${r}, ${g}, ${b}, ${a})`;
-      } else {
-        fabricCanvas.freeDrawingBrush.color = currentColor;
-      }
-      
+      fabricCanvas.freeDrawingBrush.color = currentColor;
       fabricCanvas.freeDrawingBrush.width = brushSize;
-
-      if (currentTool === 'draw') {
-        fabricCanvas.defaultCursor = 'none';
-        document.body.style.cursor = 'none';
-      } else if (currentTool === 'select') {
-        fabricCanvas.defaultCursor = 'default';
-        document.body.style.cursor = 'default';
-      } else {
-        fabricCanvas.defaultCursor = 'crosshair';
-        document.body.style.cursor = 'crosshair';
-      }
     }
   }, [fabricCanvas, currentTool, currentColor, brushSize]);
 
-  useEffect(() => {
-    const cursorCanvas = cursorCanvasRef.current;
-    const ctx = cursorCanvas.getContext('2d');
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
 
-    const updateCursor = (e) => {
-      ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-      if (currentTool === 'draw') {
-        ctx.beginPath();
-        ctx.arc(e.clientX, e.clientY, brushSize / 2, 0, Math.PI * 2);
-        ctx.strokeStyle = currentColor;
-        ctx.stroke();
-      }
-    };
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      addImageToCanvas(file);
+    }
+  };
 
-    window.addEventListener('mousemove', updateCursor);
-    return () => window.removeEventListener('mousemove', updateCursor);
-  }, [currentTool, currentColor, brushSize]);
+  const addImageToCanvas = (file) => {
+    if (file && fabricCanvas) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        fabric.Image.fromURL(e.target.result, (img) => {
+          img.scaleToWidth(200); // Adjust size as needed
+          fabricCanvas.add(img);
+          fabricCanvas.renderAll();
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    addImageToCanvas
+  }));
 
   return (
-    <div id="canvas-container">
+    <div 
+      id="canvas-container" 
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
       <canvas ref={canvasRef} />
-      <canvas
-        ref={cursorCanvasRef}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          pointerEvents: 'none',
-          zIndex: 9999,
-        }}
-        width={window.innerWidth}
-        height={window.innerHeight}
-      />
     </div>
   );
-}
+});
 
 export default Canvas;
