@@ -37,6 +37,22 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
 
   useEffect(() => {
     if (fabricCanvas) {
+      // Add logo to canvas after it's initialized
+      fabric.Image.fromURL(require('../neo-space-logo.png'), (img) => {
+        const scaleFactor = 0.5; // Adjust this to control the size
+        img.scale(scaleFactor);
+        
+        img.set({
+          left: 20,
+          top: fabricCanvas.height - (img.height * scaleFactor) - 20,
+          selectable: true,
+          evented: true,
+        });
+        
+        fabricCanvas.add(img);
+        fabricCanvas.renderAll();
+      }, { crossOrigin: 'anonymous' });
+
       fabricCanvas.isDrawingMode = currentTool === 'draw';
       fabricCanvas.selection = currentTool === 'select';
       fabricCanvas.freeDrawingBrush.color = currentColor;
