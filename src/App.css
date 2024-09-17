@@ -11,6 +11,12 @@ body, html {
   width: 100%;
   height: 100vh;
   position: relative;
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(rgba(173, 216, 230, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(173, 216, 230, 0.3) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: -1px -1px, -1px -1px;
 }
 
 /* Canvas styles */
@@ -33,7 +39,7 @@ canvas {
   display: flex;
   align-items: center;
   position: fixed;
-  bottom: 20px; /* Adjust this value to increase/decrease bottom padding */
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
