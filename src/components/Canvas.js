@@ -39,7 +39,7 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
     if (fabricCanvas) {
       // Add logo to canvas after it's initialized
       fabric.Image.fromURL(require('../neo-space-logo.png'), (img) => {
-        const scaleFactor = 0.5; // Adjust this to control the size
+        const scaleFactor = 0.1; // Adjust this to control the size
         img.scale(scaleFactor);
         
         img.set({
