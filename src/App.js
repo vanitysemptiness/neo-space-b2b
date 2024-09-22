@@ -9,9 +9,9 @@ function App() {
   const [currentColor, setCurrentColor] = useState('#000000');
   const canvasRef = useRef(null);
 
-  const handleImageUpload = (file) => {
-    if (canvasRef.current && canvasRef.current.addImageToCanvas) {
-      canvasRef.current.addImageToCanvas(file);
+  const handleFileUpload = (file) => {
+    if (canvasRef.current && canvasRef.current.addFileToCanvas) {
+      canvasRef.current.addFileToCanvas(file);
     }
   };
 
@@ -25,7 +25,7 @@ function App() {
       <Toolbar
         currentTool={currentTool}
         setCurrentTool={setCurrentTool}
-        onImageUpload={handleImageUpload}
+        onFileUpload={handleFileUpload}
       >
         <ColorPickerButton 
           currentColor={currentColor} 

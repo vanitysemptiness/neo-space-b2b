@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
-import { FiMousePointer, FiEdit2, FiImage } from 'react-icons/fi';
+import { FiMousePointer, FiEdit2, FiUpload } from 'react-icons/fi';
 
-function Toolbar({ currentTool, setCurrentTool, onImageUpload, children }) {
+function Toolbar({ currentTool, setCurrentTool, onFileUpload, children }) {
   const fileInputRef = useRef(null);
 
   const tools = [
@@ -9,7 +9,7 @@ function Toolbar({ currentTool, setCurrentTool, onImageUpload, children }) {
     { name: 'draw', icon: <FiEdit2 size={20} /> },
     { 
       name: 'upload', 
-      icon: <FiImage size={20} />,
+      icon: <FiUpload size={20} />,
       onClick: () => fileInputRef.current.click()
     }
   ];
@@ -17,7 +17,7 @@ function Toolbar({ currentTool, setCurrentTool, onImageUpload, children }) {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      onImageUpload(file);
+      onFileUpload(file);
     }
   };
 
@@ -38,7 +38,7 @@ function Toolbar({ currentTool, setCurrentTool, onImageUpload, children }) {
         ref={fileInputRef}
         style={{ display: 'none' }}
         onChange={handleFileChange}
-        accept="image/*"
+        accept=".png,.jpg,.jpeg,.gif,.csv,.pdf,.mov,.xls,.xlsx"
       />
       {children}
     </div>
