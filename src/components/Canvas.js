@@ -1,8 +1,15 @@
 import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { fabric } from 'fabric';
 import PopupToolbar from './PopupToolbar';
-import { initializeCanvas, handleDragOver, handleDrop, addFileToCanvas } from './CanvasUtils';
+import { initializeCanvas, handleDragOver } from './CanvasUtils';
 import { useCanvasHandlers } from './CanvasHandlers';
+import { 
+  saveToLocalStorage, 
+  loadFromLocalStorage, 
+  clearCanvas, 
+  setupCanvasPersistence, 
+  addFileToCanvasWithPersistence 
+} from './CanvasPersistence';
 
 const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
   const canvasRef = useRef(null);
@@ -25,6 +32,7 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
           if (activeObject.fill) activeObject.set('fill', color);
         }
         fabricCanvas.renderAll();
+        saveToLocalStorage(fabricCanvas);
       }
     }
   }, [fabricCanvas]);
@@ -40,7 +48,11 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
     const canvas = initializeCanvas(canvasRef.current);
     setFabricCanvas(canvas);
 
+    loadFromLocalStorage(canvas);
+    setupCanvasPersistence(canvas);
+
     return () => {
+      saveToLocalStorage(canvas);
       canvas.dispose();
     };
   }, []);
@@ -51,7 +63,6 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
       fabricCanvas.selection = currentTool === 'select';
       fabricCanvas.freeDrawingBrush.color = currentColor;
       fabricCanvas.freeDrawingBrush.width = brushSize;
-
       updateSelectedObjectsColor(currentColor);
 
       fabricCanvas.on('selection:created', handleSelection);
@@ -69,17 +80,40 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
   }, [fabricCanvas, currentTool, currentColor, brushSize, handleSelection, updatePopupPosition, updateSelectedObjectsColor]);
 
   useImperativeHandle(ref, () => ({
-    addFileToCanvas: (file) => fabricCanvas && addFileToCanvas(file, fabricCanvas),
+    addFileToCanvas: (file) => fabricCanvas && addFileToCanvasWithPersistence(file, fabricCanvas),
     updateColor: (color) => {
       updateSelectedObjectsColor(color);
+    },
+    saveCanvas: () => {
+      if (fabricCanvas) {
+        saveToLocalStorage(fabricCanvas);
+      }
+    },
+    loadCanvas: () => {
+      if (fabricCanvas) {
+        loadFromLocalStorage(fabricCanvas);
+        fabricCanvas.renderAll();
+      }
+    },
+    clearCanvas: () => {
+      if (fabricCanvas) {
+        clearCanvas(fabricCanvas);
+        fabricCanvas.renderAll();
+      }
     }
   }));
 
   return (
-    <div 
-      id="canvas-container" 
+    <div
+      id="canvas-container"
       onDragOver={handleDragOver}
-      onDrop={(e) => fabricCanvas && handleDrop(e, fabricCanvas)}
+      onDrop={(e) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file && fabricCanvas) {
+          addFileToCanvasWithPersistence(file, fabricCanvas);
+        }
+      }}
     >
       <canvas ref={canvasRef} />
       {showPopupToolbar && (
@@ -90,7 +124,10 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
           zIndex: 1000,
         }}>
           <PopupToolbar
-            onDelete={handleDelete}
+            onDelete={() => {
+              handleDelete();
+              if (fabricCanvas) saveToLocalStorage(fabricCanvas);
+            }}
             onChangeColor={() => document.getElementById('colorPicker').click()}
             currentColor={currentColor}
           />
