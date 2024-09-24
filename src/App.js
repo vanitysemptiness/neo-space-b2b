@@ -1,7 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import Canvas from './components/Canvas';
 import Toolbar from './components/Toolbar';
-import ColorPickerButton from './components/ColorPickerButton';
 import './App.css';
 
 function App() {
@@ -9,29 +8,33 @@ function App() {
   const [currentColor, setCurrentColor] = useState('#000000');
   const canvasRef = useRef(null);
 
-  const handleFileUpload = (file) => {
+  const handleFileUpload = useCallback((file) => {
     if (canvasRef.current && canvasRef.current.addFileToCanvas) {
       canvasRef.current.addFileToCanvas(file);
     }
-  };
+  }, []);
+
+  const handleColorChange = useCallback((color) => {
+    setCurrentColor(color);
+    if (canvasRef.current && canvasRef.current.updateColor) {
+      canvasRef.current.updateColor(color);
+    }
+  }, []);
 
   return (
     <div className="App">
       <Canvas 
         ref={canvasRef}
         currentTool={currentTool} 
-        currentColor={currentColor} 
+        currentColor={currentColor}
       />
       <Toolbar
         currentTool={currentTool}
         setCurrentTool={setCurrentTool}
         onFileUpload={handleFileUpload}
-      >
-        <ColorPickerButton 
-          currentColor={currentColor} 
-          setCurrentColor={setCurrentColor} 
-        />
-      </Toolbar>
+        currentColor={currentColor}
+        setCurrentColor={handleColorChange}
+      />
     </div>
   );
 }

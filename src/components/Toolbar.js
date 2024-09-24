@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
 import { FiMousePointer, FiEdit2, FiUpload } from 'react-icons/fi';
+import ColorPickerButton from './ColorPickerButton';
 
-function Toolbar({ currentTool, setCurrentTool, onFileUpload, children }) {
+function Toolbar({ currentTool, setCurrentTool, onFileUpload, currentColor, setCurrentColor }) {
   const fileInputRef = useRef(null);
 
   const tools = [
@@ -40,7 +41,10 @@ function Toolbar({ currentTool, setCurrentTool, onFileUpload, children }) {
         onChange={handleFileChange}
         accept=".png,.jpg,.jpeg,.gif,.csv,.pdf,.mov,.xls,.xlsx"
       />
-      {children}
+      <ColorPickerButton 
+        currentColor={currentColor} 
+        setCurrentColor={setCurrentColor}
+      />
     </div>
   );
 }

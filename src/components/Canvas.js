@@ -1,37 +1,17 @@
 import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { fabric } from 'fabric';
 import PopupToolbar from './PopupToolbar';
-import ColorPickerButton from './ColorPickerButton';
 import { initializeCanvas, handleDragOver, handleDrop, addFileToCanvas } from './CanvasUtils';
 import { useCanvasHandlers } from './CanvasHandlers';
 
-const Canvas = forwardRef(({ currentTool, currentColor, setCurrentColor: parentSetCurrentColor }, ref) => {
+const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
   const canvasRef = useRef(null);
   const [fabricCanvas, setFabricCanvas] = useState(null);
   const [brushSize, setBrushSize] = useState(5);
   const [showPopupToolbar, setShowPopupToolbar] = useState(false);
   const [popupToolbarPosition, setPopupToolbarPosition] = useState({ top: 0, left: 0 });
-  const [localColor, setLocalColor] = useState(currentColor);
 
-  const setCurrentColor = useCallback((color) => {
-    setLocalColor(color);
-    if (typeof parentSetCurrentColor === 'function') {
-      parentSetCurrentColor(color);
-    }
-    if (fabricCanvas) {
-      fabricCanvas.freeDrawingBrush.color = color;
-    }
-  }, [fabricCanvas, parentSetCurrentColor]);
-
-  const { handleSelection, handleDelete, handleChangeColor, updatePopupPosition } = useCanvasHandlers(
-    fabricCanvas,
-    setShowPopupToolbar,
-    setPopupToolbarPosition,
-    localColor
-  );
-
-  const handleColorChange = useCallback((color) => {
-    setCurrentColor(color);
+  const updateSelectedObjectsColor = useCallback((color) => {
     if (fabricCanvas) {
       const activeObject = fabricCanvas.getActiveObject();
       if (activeObject) {
@@ -47,7 +27,14 @@ const Canvas = forwardRef(({ currentTool, currentColor, setCurrentColor: parentS
         fabricCanvas.renderAll();
       }
     }
-  }, [fabricCanvas, setCurrentColor]);
+  }, [fabricCanvas]);
+
+  const { handleSelection, handleDelete, updatePopupPosition } = useCanvasHandlers(
+    fabricCanvas,
+    setShowPopupToolbar,
+    setPopupToolbarPosition,
+    currentColor
+  );
 
   useEffect(() => {
     const canvas = initializeCanvas(canvasRef.current);
@@ -62,8 +49,10 @@ const Canvas = forwardRef(({ currentTool, currentColor, setCurrentColor: parentS
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = currentTool === 'draw';
       fabricCanvas.selection = currentTool === 'select';
-      fabricCanvas.freeDrawingBrush.color = localColor;
+      fabricCanvas.freeDrawingBrush.color = currentColor;
       fabricCanvas.freeDrawingBrush.width = brushSize;
+
+      updateSelectedObjectsColor(currentColor);
 
       fabricCanvas.on('selection:created', handleSelection);
       fabricCanvas.on('selection:updated', handleSelection);
@@ -77,10 +66,13 @@ const Canvas = forwardRef(({ currentTool, currentColor, setCurrentColor: parentS
         fabricCanvas.off('object:moving', updatePopupPosition);
       };
     }
-  }, [fabricCanvas, currentTool, localColor, brushSize, handleSelection, updatePopupPosition]);
+  }, [fabricCanvas, currentTool, currentColor, brushSize, handleSelection, updatePopupPosition, updateSelectedObjectsColor]);
 
   useImperativeHandle(ref, () => ({
-    addFileToCanvas: (file) => fabricCanvas && addFileToCanvas(file, fabricCanvas)
+    addFileToCanvas: (file) => fabricCanvas && addFileToCanvas(file, fabricCanvas),
+    updateColor: (color) => {
+      updateSelectedObjectsColor(color);
+    }
   }));
 
   return (
@@ -100,17 +92,10 @@ const Canvas = forwardRef(({ currentTool, currentColor, setCurrentColor: parentS
           <PopupToolbar
             onDelete={handleDelete}
             onChangeColor={() => document.getElementById('colorPicker').click()}
-            currentColor={localColor}
+            currentColor={currentColor}
           />
         </div>
       )}
-      <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)' }}>
-        <ColorPickerButton 
-          currentColor={localColor} 
-          setCurrentColor={setCurrentColor}
-          onColorChange={handleColorChange}
-        />
-      </div>
     </div>
   );
 });
