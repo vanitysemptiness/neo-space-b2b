@@ -10,7 +10,7 @@ export const initializeCanvas = (canvasElement, handleSelection) => {
 
   canvas.on('selection:created', handleSelection);
   canvas.on('selection:updated', handleSelection);
-  canvas.on('selection:cleared', () => handleSelection({ selected: [] }));
+  canvas.on('selection:cleared', handleSelection);
 
   return canvas;
 };

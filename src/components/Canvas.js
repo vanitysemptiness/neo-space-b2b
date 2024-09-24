@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { fabric } from 'fabric';
 import PopupToolbar from './PopupToolbar';
-import { initializeCanvas, handleDragOver } from './CanvasUtils';
+import { handleDragOver } from './CanvasUtils';
 import { useCanvasHandlers } from './CanvasHandlers';
 import { 
   saveToLocalStorage, 
@@ -13,14 +13,15 @@ import {
 
 const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
   const canvasRef = useRef(null);
-  const [fabricCanvas, setFabricCanvas] = useState(null);
+  const fabricCanvasRef = useRef(null);
   const [brushSize, setBrushSize] = useState(5);
   const [showPopupToolbar, setShowPopupToolbar] = useState(false);
   const [popupToolbarPosition, setPopupToolbarPosition] = useState({ top: 0, left: 0 });
 
   const updateSelectedObjectsColor = useCallback((color) => {
-    if (fabricCanvas) {
-      const activeObject = fabricCanvas.getActiveObject();
+    const canvas = fabricCanvasRef.current;
+    if (canvas) {
+      const activeObject = canvas.getActiveObject();
       if (activeObject) {
         if (activeObject.type === 'activeSelection') {
           activeObject.forEachObject((obj) => {
@@ -31,74 +32,97 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
           if (activeObject.stroke) activeObject.set('stroke', color);
           if (activeObject.fill) activeObject.set('fill', color);
         }
-        fabricCanvas.renderAll();
-        saveToLocalStorage(fabricCanvas);
+        canvas.renderAll();
+        saveToLocalStorage(canvas);
       }
     }
-  }, [fabricCanvas]);
+  }, []);
 
   const { handleSelection, handleDelete, updatePopupPosition } = useCanvasHandlers(
-    fabricCanvas,
+    fabricCanvasRef.current,
     setShowPopupToolbar,
     setPopupToolbarPosition,
     currentColor
   );
 
   useEffect(() => {
-    const canvas = initializeCanvas(canvasRef.current);
-    setFabricCanvas(canvas);
+    const canvas = new fabric.Canvas(canvasRef.current, {
+      isDrawingMode: false,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      selection: true,
+    });
+    fabricCanvasRef.current = canvas;
 
     loadFromLocalStorage(canvas);
     setupCanvasPersistence(canvas);
 
+    const handleResize = () => {
+      canvas.setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+
     return () => {
-      saveToLocalStorage(canvas);
+      window.removeEventListener('resize', handleResize);
       canvas.dispose();
     };
   }, []);
 
   useEffect(() => {
-    if (fabricCanvas) {
-      fabricCanvas.isDrawingMode = currentTool === 'draw';
-      fabricCanvas.selection = currentTool === 'select';
-      fabricCanvas.freeDrawingBrush.color = currentColor;
-      fabricCanvas.freeDrawingBrush.width = brushSize;
+    const canvas = fabricCanvasRef.current;
+    if (canvas) {
+      canvas.isDrawingMode = currentTool === 'draw';
+      canvas.selection = currentTool === 'select';
+      canvas.freeDrawingBrush.color = currentColor;
+      canvas.freeDrawingBrush.width = brushSize;
       updateSelectedObjectsColor(currentColor);
 
-      fabricCanvas.on('selection:created', handleSelection);
-      fabricCanvas.on('selection:updated', handleSelection);
-      fabricCanvas.on('selection:cleared', () => setShowPopupToolbar(false));
-      fabricCanvas.on('object:moving', updatePopupPosition);
+      canvas.on('selection:created', handleSelection);
+      canvas.on('selection:updated', handleSelection);
+      canvas.on('selection:cleared', handleSelection);
+      canvas.on('object:moving', updatePopupPosition);
 
       return () => {
-        fabricCanvas.off('selection:created', handleSelection);
-        fabricCanvas.off('selection:updated', handleSelection);
-        fabricCanvas.off('selection:cleared');
-        fabricCanvas.off('object:moving', updatePopupPosition);
+        canvas.off('selection:created', handleSelection);
+        canvas.off('selection:updated', handleSelection);
+        canvas.off('selection:cleared', handleSelection);
+        canvas.off('object:moving', updatePopupPosition);
       };
     }
-  }, [fabricCanvas, currentTool, currentColor, brushSize, handleSelection, updatePopupPosition, updateSelectedObjectsColor]);
+  }, [currentTool, currentColor, brushSize, handleSelection, updatePopupPosition, updateSelectedObjectsColor]);
 
   useImperativeHandle(ref, () => ({
-    addFileToCanvas: (file) => fabricCanvas && addFileToCanvasWithPersistence(file, fabricCanvas),
+    addFileToCanvas: (file) => {
+      const canvas = fabricCanvasRef.current;
+      if (canvas && file) {
+        addFileToCanvasWithPersistence(file, canvas);
+      }
+    },
     updateColor: (color) => {
       updateSelectedObjectsColor(color);
     },
     saveCanvas: () => {
-      if (fabricCanvas) {
-        saveToLocalStorage(fabricCanvas);
+      const canvas = fabricCanvasRef.current;
+      if (canvas) {
+        saveToLocalStorage(canvas);
       }
     },
     loadCanvas: () => {
-      if (fabricCanvas) {
-        loadFromLocalStorage(fabricCanvas);
-        fabricCanvas.renderAll();
+      const canvas = fabricCanvasRef.current;
+      if (canvas) {
+        loadFromLocalStorage(canvas);
+        canvas.renderAll();
       }
     },
     clearCanvas: () => {
-      if (fabricCanvas) {
-        clearCanvas(fabricCanvas);
-        fabricCanvas.renderAll();
+      const canvas = fabricCanvasRef.current;
+      if (canvas) {
+        clearCanvas(canvas);
+        canvas.renderAll();
       }
     }
   }));
@@ -110,8 +134,8 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
       onDrop={(e) => {
         e.preventDefault();
         const file = e.dataTransfer.files[0];
-        if (file && fabricCanvas) {
-          addFileToCanvasWithPersistence(file, fabricCanvas);
+        if (file && fabricCanvasRef.current) {
+          addFileToCanvasWithPersistence(file, fabricCanvasRef.current);
         }
       }}
     >
@@ -126,7 +150,7 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
           <PopupToolbar
             onDelete={() => {
               handleDelete();
-              if (fabricCanvas) saveToLocalStorage(fabricCanvas);
+              if (fabricCanvasRef.current) saveToLocalStorage(fabricCanvasRef.current);
             }}
             onChangeColor={() => document.getElementById('colorPicker').click()}
             currentColor={currentColor}
