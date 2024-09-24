@@ -18,7 +18,10 @@ const Canvas = forwardRef(({ currentTool, currentColor, setCurrentColor: parentS
     if (typeof parentSetCurrentColor === 'function') {
       parentSetCurrentColor(color);
     }
-  }, [parentSetCurrentColor]);
+    if (fabricCanvas) {
+      fabricCanvas.freeDrawingBrush.color = color;
+    }
+  }, [fabricCanvas, parentSetCurrentColor]);
 
   const { handleSelection, handleDelete, handleChangeColor, updatePopupPosition } = useCanvasHandlers(
     fabricCanvas,

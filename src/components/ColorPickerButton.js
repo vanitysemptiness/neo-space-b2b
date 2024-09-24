@@ -12,30 +12,32 @@ const ColorPickerButton = ({ currentColor, setCurrentColor, onColorChange }) => 
       theme: 'large',
       themeMode: 'light',
       formatToggle: true,
-      closeButton: false,
+      closeButton: true,
       clearButton: true,
       swatches: [
         '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF', '#FFFFFF', '#000000'
-      ]
+      ],
+      inline: false,
+      margin: 10,
     });
 
-    const handleColorChange = (event) => {
-      const newColor = event.target.value;
+    const handleColorChange = (color) => {
       if (typeof setCurrentColor === 'function') {
-        setCurrentColor(newColor);
+        setCurrentColor(color);
       } else {
         console.warn('setCurrentColor is not a function');
       }
       if (typeof onColorChange === 'function') {
-        onColorChange(newColor);
+        onColorChange(color);
       }
     };
 
-    const colorInput = colorInputRef.current;
-    colorInput.addEventListener('input', handleColorChange);
+    Coloris.setInstance('#colorPicker', {
+      onChange: handleColorChange
+    });
 
     return () => {
-      colorInput.removeEventListener('input', handleColorChange);
+      Coloris.removeInstance('#colorPicker');
     };
   }, [setCurrentColor, onColorChange]);
 

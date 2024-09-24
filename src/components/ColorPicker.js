@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import '@melloware/coloris/dist/coloris.css';
 import Coloris from '@melloware/coloris';
 
-const ColorPickerButton = ({ currentColor, setCurrentColor }) => {
+const ColorPickerButton = ({ currentColor, setCurrentColor, onColorChange }) => {
   const colorInputRef = useRef(null);
 
   useEffect(() => {
@@ -12,18 +12,38 @@ const ColorPickerButton = ({ currentColor, setCurrentColor }) => {
       theme: 'large',
       themeMode: 'light',
       formatToggle: true,
-      closeButton: true,
+      closeButton: true, // Add back the close button
       clearButton: true,
-      alpha: true,
       swatches: [
         '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF', '#FFFFFF', '#000000'
-      ]
+      ],
+      // Add custom positioning
+      inline: false,
+      margin: 10,
     });
-  }, []);
 
-  const handleColorChange = (event) => {
-    const newColor = event.target.value;
-    setCurrentColor(newColor);
+    const handleColorChange = (event) => {
+      const newColor = event.target.value;
+      if (typeof setCurrentColor === 'function') {
+        setCurrentColor(newColor);
+      } else {
+        console.warn('setCurrentColor is not a function');
+      }
+      if (typeof onColorChange === 'function') {
+        onColorChange(newColor);
+      }
+    };
+
+    const colorInput = colorInputRef.current;
+    colorInput.addEventListener('input', handleColorChange);
+
+    return () => {
+      colorInput.removeEventListener('input', handleColorChange);
+    };
+  }, [setCurrentColor, onColorChange]);
+
+  const handleButtonClick = () => {
+    colorInputRef.current.click();
   };
 
   return (
@@ -33,12 +53,11 @@ const ColorPickerButton = ({ currentColor, setCurrentColor }) => {
         id="colorPicker"
         ref={colorInputRef}
         value={currentColor}
-        onChange={handleColorChange}
         data-coloris
         style={{ display: 'none' }}
       />
       <button 
-        onClick={() => colorInputRef.current.click()}
+        onClick={handleButtonClick}
         style={{ 
           backgroundColor: currentColor,
           width: '30px',
