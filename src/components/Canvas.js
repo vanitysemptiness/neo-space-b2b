@@ -11,12 +11,15 @@ import {
   addFileToCanvasWithPersistence 
 } from './CanvasPersistence';
 
-const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
+const Canvas = forwardRef(({ currentTool, currentColor, setCurrentTool }, ref) => {
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
   const [brushSize, setBrushSize] = useState(5);
   const [showPopupToolbar, setShowPopupToolbar] = useState(false);
   const [popupToolbarPosition, setPopupToolbarPosition] = useState({ top: 0, left: 0 });
+  const squareRef = useRef(null);
+  const isDrawingRef = useRef(false);
+  const startPointRef = useRef(null);
 
   const updateSelectedObjectsColor = useCallback((color) => {
     const canvas = fabricCanvasRef.current;
@@ -46,30 +49,32 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
   );
 
   useEffect(() => {
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      isDrawingMode: false,
-      width: window.innerWidth,
-      height: window.innerHeight,
-      selection: true,
-    });
-    fabricCanvasRef.current = canvas;
-
-    loadFromLocalStorage(canvas);
-    setupCanvasPersistence(canvas);
-
-    const handleResize = () => {
-      canvas.setDimensions({
+    if (canvasRef.current) {
+      const canvas = new fabric.Canvas(canvasRef.current, {
+        isDrawingMode: false,
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
+        selection: true,
       });
-    };
+      fabricCanvasRef.current = canvas;
 
-    window.addEventListener('resize', handleResize);
+      loadFromLocalStorage(canvas);
+      setupCanvasPersistence(canvas);
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      canvas.dispose();
-    };
+      const handleResize = () => {
+        canvas.setDimensions({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+      };
+
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        canvas.dispose();
+      };
+    }
   }, []);
 
   useEffect(() => {
@@ -86,14 +91,82 @@ const Canvas = forwardRef(({ currentTool, currentColor }, ref) => {
       canvas.on('selection:cleared', handleSelection);
       canvas.on('object:moving', updatePopupPosition);
 
+      canvas.on('mouse:down', handleMouseDown);
+      canvas.on('mouse:move', handleMouseMove);
+      canvas.on('mouse:up', handleMouseUp);
+
       return () => {
         canvas.off('selection:created', handleSelection);
         canvas.off('selection:updated', handleSelection);
         canvas.off('selection:cleared', handleSelection);
         canvas.off('object:moving', updatePopupPosition);
+        canvas.off('mouse:down', handleMouseDown);
+        canvas.off('mouse:move', handleMouseMove);
+        canvas.off('mouse:up', handleMouseUp);
       };
     }
   }, [currentTool, currentColor, brushSize, handleSelection, updatePopupPosition, updateSelectedObjectsColor]);
+
+  const handleMouseDown = (event) => {
+    if (currentTool === 'square') {
+      isDrawingRef.current = true;
+      startPointRef.current = fabricCanvasRef.current.getPointer(event.e);
+      squareRef.current = new fabric.Rect({
+        left: startPointRef.current.x,
+        top: startPointRef.current.y,
+        width: 0,
+        height: 0,
+        fill: currentColor,
+        strokeWidth: 2,
+        stroke: 'rgba(0,0,0,0.3)',
+        rx: 10,
+        ry: 10,
+        shadow: new fabric.Shadow({
+          color: 'rgba(0,0,0,0.3)',
+          blur: 10,
+          offsetX: 5,
+          offsetY: 5
+        }),
+        selectable: false,
+        evented: false,
+      });
+      fabricCanvasRef.current.add(squareRef.current);
+    }
+  };
+
+  const handleMouseMove = (event) => {
+    if (currentTool === 'square' && isDrawingRef.current) {
+      const pointer = fabricCanvasRef.current.getPointer(event.e);
+      const startPoint = startPointRef.current;
+
+      const left = Math.min(startPoint.x, pointer.x);
+      const top = Math.min(startPoint.y, pointer.y);
+      const width = Math.abs(startPoint.x - pointer.x);
+      const height = Math.abs(startPoint.y - pointer.y);
+
+      squareRef.current.set({
+        left: left,
+        top: top,
+        width: width,
+        height: height
+      });
+      fabricCanvasRef.current.renderAll();
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (currentTool === 'square' && isDrawingRef.current) {
+      isDrawingRef.current = false;
+      squareRef.current.set({
+        selectable: true,
+        evented: true,
+      });
+      fabricCanvasRef.current.setActiveObject(squareRef.current);
+      fabricCanvasRef.current.renderAll();
+      saveToLocalStorage(fabricCanvasRef.current);
+      setCurrentTool('select');
+    }
+  };
 
   useImperativeHandle(ref, () => ({
     addFileToCanvas: (file) => {

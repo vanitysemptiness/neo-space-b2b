@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { FiMousePointer, FiEdit2, FiUpload } from 'react-icons/fi';
+import { FiMousePointer, FiEdit2, FiUpload, FiSquare } from 'react-icons/fi';
 import ColorPickerButton from './ColorPickerButton';
 
 function Toolbar({ currentTool, setCurrentTool, onFileUpload, currentColor, setCurrentColor }) {
@@ -8,6 +8,7 @@ function Toolbar({ currentTool, setCurrentTool, onFileUpload, currentColor, setC
   const tools = [
     { name: 'select', icon: <FiMousePointer size={20} /> },
     { name: 'draw', icon: <FiEdit2 size={20} /> },
+    { name: 'square', icon: <FiSquare size={20} /> },
     { 
       name: 'upload', 
       icon: <FiUpload size={20} />,
