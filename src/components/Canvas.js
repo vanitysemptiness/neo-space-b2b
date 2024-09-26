@@ -20,6 +20,7 @@ const Canvas = forwardRef(({ currentTool, currentColor, setCurrentTool }, ref) =
   const squareRef = useRef(null);
   const isDrawingRef = useRef(false);
   const startPointRef = useRef(null);
+  const [isObjectSelected, setIsObjectSelected] = useState(false);
 
   const updateSelectedObjectsColor = useCallback((color) => {
     const canvas = fabricCanvasRef.current;
@@ -86,9 +87,14 @@ const Canvas = forwardRef(({ currentTool, currentColor, setCurrentTool }, ref) =
       canvas.freeDrawingBrush.width = brushSize;
       updateSelectedObjectsColor(currentColor);
 
-      canvas.on('selection:created', handleSelection);
-      canvas.on('selection:updated', handleSelection);
-      canvas.on('selection:cleared', handleSelection);
+      const handleSelectionEvent = () => {
+        handleSelection();
+        setIsObjectSelected(!!canvas.getActiveObject());
+      };
+
+      canvas.on('selection:created', handleSelectionEvent);
+      canvas.on('selection:updated', handleSelectionEvent);
+      canvas.on('selection:cleared', handleSelectionEvent);
       canvas.on('object:moving', updatePopupPosition);
 
       canvas.on('mouse:down', handleMouseDown);
@@ -96,9 +102,9 @@ const Canvas = forwardRef(({ currentTool, currentColor, setCurrentTool }, ref) =
       canvas.on('mouse:up', handleMouseUp);
 
       return () => {
-        canvas.off('selection:created', handleSelection);
-        canvas.off('selection:updated', handleSelection);
-        canvas.off('selection:cleared', handleSelection);
+        canvas.off('selection:created', handleSelectionEvent);
+        canvas.off('selection:updated', handleSelectionEvent);
+        canvas.off('selection:cleared', handleSelectionEvent);
         canvas.off('object:moving', updatePopupPosition);
         canvas.off('mouse:down', handleMouseDown);
         canvas.off('mouse:move', handleMouseMove);
@@ -168,6 +174,23 @@ const Canvas = forwardRef(({ currentTool, currentColor, setCurrentTool }, ref) =
     }
   };
 
+  const handleDeleteSelected = useCallback(() => {
+    const canvas = fabricCanvasRef.current;
+    if (canvas) {
+      const activeObject = canvas.getActiveObject();
+      if (activeObject) {
+        if (activeObject.type === 'activeSelection') {
+          activeObject.forEachObject((obj) => canvas.remove(obj));
+        } else {
+          canvas.remove(activeObject);
+        }
+        canvas.discardActiveObject().renderAll();
+        setIsObjectSelected(false);
+        saveToLocalStorage(canvas);
+      }
+    }
+  }, []);
+
   useImperativeHandle(ref, () => ({
     addFileToCanvas: (file) => {
       const canvas = fabricCanvasRef.current;
@@ -197,7 +220,9 @@ const Canvas = forwardRef(({ currentTool, currentColor, setCurrentTool }, ref) =
         clearCanvas(canvas);
         canvas.renderAll();
       }
-    }
+    },
+    deleteSelected: handleDeleteSelected,
+    isObjectSelected: isObjectSelected
   }));
 
   return (

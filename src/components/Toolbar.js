@@ -1,8 +1,16 @@
 import React, { useRef } from 'react';
-import { FiMousePointer, FiEdit2, FiUpload, FiSquare } from 'react-icons/fi';
+import { FiMousePointer, FiEdit2, FiUpload, FiSquare, FiTrash2 } from 'react-icons/fi';
 import ColorPickerButton from './ColorPickerButton';
 
-function Toolbar({ currentTool, setCurrentTool, onFileUpload, currentColor, setCurrentColor }) {
+function Toolbar({ 
+  currentTool, 
+  setCurrentTool, 
+  onFileUpload, 
+  currentColor, 
+  setCurrentColor, 
+  isObjectSelected,
+  onDeleteSelected
+}) {
   const fileInputRef = useRef(null);
 
   const tools = [
@@ -35,6 +43,15 @@ function Toolbar({ currentTool, setCurrentTool, onFileUpload, currentColor, setC
           {tool.icon}
         </button>
       ))}
+      {currentTool === 'select' && isObjectSelected && (
+        <button
+          onClick={onDeleteSelected}
+          className="tool-button"
+          title="Delete selected"
+        >
+          <FiTrash2 size={20} color="red" />
+        </button>
+      )}
       <input
         type="file"
         ref={fileInputRef}
