@@ -32,6 +32,10 @@ export const useCanvasTools = (fabricCanvasRef, currentTool, currentColor, setCu
         evented: false,
       });
       canvas.add(squareRef.current);
+    } else if (currentTool === 'textbox') {
+      canvas.on('mouse:down', (event) => handleTextboxMode.mousedown(canvas, canvas.getPointer(event.e), currentColor));
+      canvas.on('mouse:move', (event) => handleTextboxMode.mousemove(canvas, canvas.getPointer(event.e)));
+      canvas.on('mouse:up', () => handleTextboxMode.mouseup(canvas, setCurrentTool));
     }
   }, [currentTool, currentColor, fabricCanvasRef]);
 
@@ -53,7 +57,7 @@ export const useCanvasTools = (fabricCanvasRef, currentTool, currentColor, setCu
         height: height
       });
       canvas.renderAll();
-    }
+    } 
   }, [currentTool, fabricCanvasRef]);
 
   const handleMouseUp = useCallback(() => {
