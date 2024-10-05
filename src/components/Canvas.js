@@ -6,6 +6,7 @@ import { handleDragOver } from './CanvasUtils';
 import { useCanvasHandlers } from './CanvasHandlers';
 import { handleTextboxMode } from './Textbox';
 import Drawing from './Drawing';
+import Camera from './Camera';
 import { 
   saveToLocalStorage, 
   loadFromLocalStorage, 
@@ -92,7 +93,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
 
   const handleMouseDown = useCallback((event) => {
     const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
+    if (!canvas || currentTool === 'hand') return;
 
     const pointer = canvas.getPointer(event.e);
     startPointRef.current = pointer;
@@ -125,7 +126,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
 
   const handleMouseMove = useCallback((event) => {
     const canvas = fabricCanvasRef.current;
-    if (!canvas || !startPointRef.current) return;
+    if (!canvas || !startPointRef.current || currentTool === 'hand') return;
 
     const pointer = canvas.getPointer(event.e);
     const startPoint = startPointRef.current;
@@ -150,7 +151,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
 
   const handleMouseUp = useCallback(() => {
     const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
+    if (!canvas || currentTool === 'hand') return;
 
     startPointRef.current = null;
 
@@ -166,8 +167,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
 
     canvas.renderAll();
     saveToLocalStorage(canvas);
-    setCurrentTool('select');
-  }, [currentTool, setCurrentTool]);
+  }, [currentTool]);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -211,25 +211,25 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     const canvas = fabricCanvasRef.current;
     if (canvas) {
       canvas.isDrawingMode = currentTool === 'draw';
-      canvas.selection = currentTool === 'select';
-  
+      canvas.selection = currentTool !== 'hand';
+
       canvas.off('mouse:down');
       canvas.off('mouse:move');
       canvas.off('mouse:up');
-  
-      if (currentTool !== 'draw') {
+
+      if (currentTool !== 'hand') {
         canvas.on('mouse:down', handleMouseDown);
         canvas.on('mouse:move', handleMouseMove);
         canvas.on('mouse:up', handleMouseUp);
       }
-  
+
       return () => {
         canvas.off('mouse:down');
         canvas.off('mouse:move');
         canvas.off('mouse:up');
       };
     }
-  }, [currentTool, currentColor, brushSize, handleMouseDown, handleMouseMove, handleMouseUp]);
+  }, [currentTool, handleMouseDown, handleMouseMove, handleMouseUp]);
 
   useImperativeHandle(ref, () => ({
     addFileToCanvas: (file) => {
@@ -262,7 +262,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
   }));
 
   return (
-    <>
+    <Camera canvas={fabricCanvasRef.current} currentTool={currentTool}>
       <div
         id="canvas-container"
         onDragOver={handleDragOver}
@@ -308,7 +308,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
           }
         }}
       />
-    </>
+    </Camera>
   );
 });
 
