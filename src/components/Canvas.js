@@ -24,23 +24,6 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
   const [popupToolbarPosition, setPopupToolbarPosition] = useState({ top: 0, left: 0 });
   const { currentColor } = useColor();
 
-  const handleDelete = useCallback(() => {
-    const canvas = fabricCanvasRef.current;
-    if (canvas) {
-      const activeObject = canvas.getActiveObject();
-      if (activeObject) {
-        if (activeObject.type === 'activeSelection') {
-          activeObject.forEachObject((obj) => canvas.remove(obj));
-        } else {
-          canvas.remove(activeObject);
-        }
-        canvas.discardActiveObject().renderAll();
-        setShowPopupToolbar(false);
-        saveToLocalStorage(canvas);
-      }
-    }
-  }, []);
-
   const handleMouseDown = useCallback((event) => {
     const canvas = fabricCanvasRef.current;
     if (!canvas || currentTool === 'hand') return;
@@ -68,12 +51,12 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     if (!canvas || currentTool === 'hand') return;
 
     if (currentTool === 'textbox') {
-      handleTextboxMode.mouseup(canvas);
+      handleTextboxMode.mouseup(canvas, setCurrentTool);
     }
 
     canvas.renderAll();
     saveToLocalStorage(canvas);
-  }, [currentTool]);
+  }, [currentTool, setCurrentTool]);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -163,7 +146,6 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
         canvas.renderAll();
       }
     },
-    deleteSelected: handleDelete,
     isObjectSelected: () => {
       const canvas = fabricCanvasRef.current;
       return canvas ? !!canvas.getActiveObject() : false;
@@ -186,6 +168,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
             <Square
               fabricCanvas={fabricCanvasRef.current}
               currentColor={currentColor}
+              setCurrentTool={setCurrentTool}
             />
           )}
           <Selection

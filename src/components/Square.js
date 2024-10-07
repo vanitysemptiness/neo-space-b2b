@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { fabric } from 'fabric';
 
-const Square = ({ fabricCanvas, currentColor }) => {
+const Square = ({ fabricCanvas, currentColor, setCurrentTool }) => {
   const squareRef = useRef(null);
   const startPointRef = useRef(null);
 
@@ -62,7 +62,10 @@ const Square = ({ fabricCanvas, currentColor }) => {
       fabricCanvas.setActiveObject(squareRef.current);
       fabricCanvas.renderAll();
     }
-  }, [fabricCanvas]);
+
+    // Switch to selection mode after drawing a square
+    setCurrentTool('select');
+  }, [fabricCanvas, setCurrentTool]);
 
   useEffect(() => {
     if (!fabricCanvas) return;

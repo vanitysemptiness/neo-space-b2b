@@ -34,7 +34,7 @@ const drawTextbox = (canvas, startPoint, pointer) => {
   canvas.renderAll();
 };
 
-const finishDrawing = (canvas) => {
+const finishDrawing = (canvas, setCurrentTool) => {
   if (!textboxRef) return;
 
   textboxRef.set({
@@ -44,6 +44,9 @@ const finishDrawing = (canvas) => {
   canvas.setActiveObject(textboxRef);
   canvas.renderAll();
   textboxRef = null;
+
+  // Switch to selection mode after creating a textbox
+  setCurrentTool('select');
 };
 
 export const handleTextboxMode = {
