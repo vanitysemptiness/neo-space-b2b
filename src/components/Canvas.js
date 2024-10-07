@@ -7,6 +7,7 @@ import { useCanvasHandlers } from './CanvasHandlers';
 import { handleTextboxMode } from './Textbox';
 import Drawing from './Drawing';
 import Camera from './Camera';
+import Square from './Square';
 import { 
   saveToLocalStorage, 
   loadFromLocalStorage, 
@@ -21,8 +22,6 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
   const [brushSize, setBrushSize] = useState(5);
   const [showPopupToolbar, setShowPopupToolbar] = useState(false);
   const [popupToolbarPosition, setPopupToolbarPosition] = useState({ top: 0, left: 0 });
-  const squareRef = useRef(null);
-  const startPointRef = useRef(null);
   const [currentColor, setCurrentColor] = useState('#000000');
 
   const updateObjectColor = useCallback((obj, color) => {
@@ -96,56 +95,20 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     if (!canvas || currentTool === 'hand') return;
 
     const pointer = canvas.getPointer(event.e);
-    startPointRef.current = pointer;
 
-    if (currentTool === 'square') {
-      squareRef.current = new fabric.Rect({
-        left: pointer.x,
-        top: pointer.y,
-        width: 0,
-        height: 0,
-        fill: currentColor,
-        strokeWidth: 2,
-        stroke: 'rgba(0,0,0,0.3)',
-        rx: 10,
-        ry: 10,
-        shadow: new fabric.Shadow({
-          color: 'rgba(0,0,0,0.3)',
-          blur: 10,
-          offsetX: 5,
-          offsetY: 5
-        }),
-        selectable: false,
-        evented: false,
-      });
-      canvas.add(squareRef.current);
-    } else if (currentTool === 'textbox') {
+    if (currentTool === 'textbox') {
       handleTextboxMode.mousedown(canvas, pointer, currentColor);
     }
   }, [currentTool, currentColor]);
 
   const handleMouseMove = useCallback((event) => {
     const canvas = fabricCanvasRef.current;
-    if (!canvas || !startPointRef.current || currentTool === 'hand') return;
+    if (!canvas || currentTool === 'hand') return;
 
     const pointer = canvas.getPointer(event.e);
-    const startPoint = startPointRef.current;
 
-    if (currentTool === 'square' && squareRef.current) {
-      const left = Math.min(startPoint.x, pointer.x);
-      const top = Math.min(startPoint.y, pointer.y);
-      const width = Math.abs(startPoint.x - pointer.x);
-      const height = Math.abs(startPoint.y - pointer.y);
-
-      squareRef.current.set({
-        left: left,
-        top: top,
-        width: width,
-        height: height
-      });
-      canvas.renderAll();
-    } else if (currentTool === 'textbox') {
-      handleTextboxMode.mousemove(canvas, startPoint, pointer);
+    if (currentTool === 'textbox') {
+      handleTextboxMode.mousemove(canvas, pointer, pointer);
     }
   }, [currentTool]);
 
@@ -153,15 +116,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     const canvas = fabricCanvasRef.current;
     if (!canvas || currentTool === 'hand') return;
 
-    startPointRef.current = null;
-
-    if (currentTool === 'square' && squareRef.current) {
-      squareRef.current.set({
-        selectable: true,
-        evented: true,
-      });
-      canvas.setActiveObject(squareRef.current);
-    } else if (currentTool === 'textbox') {
+    if (currentTool === 'textbox') {
       handleTextboxMode.mouseup(canvas);
     }
 
@@ -217,7 +172,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
       canvas.off('mouse:move');
       canvas.off('mouse:up');
 
-      if (currentTool !== 'hand') {
+      if (currentTool !== 'hand' && currentTool !== 'square') {
         canvas.on('mouse:down', handleMouseDown);
         canvas.on('mouse:move', handleMouseMove);
         canvas.on('mouse:up', handleMouseUp);
@@ -280,6 +235,12 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
             fabricCanvas={fabricCanvasRef.current}
             currentColor={currentColor}
             brushSize={brushSize}
+          />
+        )}
+        {currentTool === 'square' && (
+          <Square
+            fabricCanvas={fabricCanvasRef.current}
+            currentColor={currentColor}
           />
         )}
         {showPopupToolbar && (
