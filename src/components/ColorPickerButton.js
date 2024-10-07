@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import '@melloware/coloris/dist/coloris.css';
 import Coloris from '@melloware/coloris';
+import { useColor } from './ColorContext';
 
-const ColorPickerButton = ({ currentColor, setCurrentColor }) => {
+const ColorPickerButton = () => {
   const colorInputRef = useRef(null);
+  const { currentColor, changeColor } = useColor();
 
   useEffect(() => {
     Coloris.init();
@@ -22,7 +24,7 @@ const ColorPickerButton = ({ currentColor, setCurrentColor }) => {
     });
 
     const handleColorChange = (color) => {
-      setCurrentColor(color);
+      changeColor(color);
     };
 
     Coloris.setInstance('#colorPicker', {
@@ -32,7 +34,7 @@ const ColorPickerButton = ({ currentColor, setCurrentColor }) => {
     return () => {
       Coloris.removeInstance('#colorPicker');
     };
-  }, [setCurrentColor]);
+  }, [changeColor]);
 
   const handleButtonClick = () => {
     colorInputRef.current.click();
@@ -47,7 +49,7 @@ const ColorPickerButton = ({ currentColor, setCurrentColor }) => {
         value={currentColor}
         data-coloris
         style={{ display: 'none' }}
-        onChange={(e) => setCurrentColor(e.target.value)}
+        onChange={(e) => changeColor(e.target.value)}
       />
       <button 
         onClick={handleButtonClick}

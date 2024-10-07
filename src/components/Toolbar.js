@@ -1,17 +1,17 @@
 import React, { useRef } from 'react';
 import { FiMousePointer, FiEdit2, FiUpload, FiSquare, FiTrash2, FiType, FiMove } from 'react-icons/fi';
 import ColorPickerButton from './ColorPickerButton';
+import { useColor } from './ColorContext';
 
 function Toolbar({ 
   currentTool, 
   setCurrentTool, 
   onFileUpload, 
-  currentColor, 
-  setCurrentColor, 
   isObjectSelected,
   onDeleteSelected
 }) {
   const fileInputRef = useRef(null);
+  const { currentColor, changeColor } = useColor();
 
   const tools = [
     { name: 'hand', icon: <FiMove size={20} /> },
@@ -63,7 +63,7 @@ function Toolbar({
       />
       <ColorPickerButton 
         currentColor={currentColor} 
-        setCurrentColor={setCurrentColor}
+        setCurrentColor={changeColor}
       />
     </div>
   );

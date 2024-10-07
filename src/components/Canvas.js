@@ -7,6 +7,7 @@ import Camera from './Camera';
 import Square from './Square';
 import Selection from './Selection';
 import DragAndDrop from './DragAndDrop';
+import { useColor } from './ColorContext';
 import { 
   saveToLocalStorage, 
   loadFromLocalStorage, 
@@ -21,39 +22,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
   const [brushSize, setBrushSize] = useState(5);
   const [showPopupToolbar, setShowPopupToolbar] = useState(false);
   const [popupToolbarPosition, setPopupToolbarPosition] = useState({ top: 0, left: 0 });
-  const [currentColor, setCurrentColor] = useState('#000000');
-
-  const updateObjectColor = useCallback((obj, color) => {
-    if (obj.type === 'path') {
-      obj.set('stroke', color);
-    } else {
-      if (obj.stroke) obj.set('stroke', color);
-      if (obj.fill) obj.set('fill', color);
-    }
-  }, []);
-
-  const updateSelectedObjectsColor = useCallback((color) => {
-    const canvas = fabricCanvasRef.current;
-    if (canvas) {
-      const activeObject = canvas.getActiveObject();
-      if (activeObject) {
-        if (activeObject.type === 'activeSelection') {
-          activeObject.forEachObject((obj) => {
-            updateObjectColor(obj, color);
-          });
-        } else {
-          updateObjectColor(activeObject, color);
-        }
-        canvas.renderAll();
-        saveToLocalStorage(canvas);
-      }
-    }
-    setCurrentColor(color);
-  }, [updateObjectColor]);
-
-  const handleColorChange = useCallback((color) => {
-    updateSelectedObjectsColor(color);
-  }, [updateSelectedObjectsColor]);
+  const { currentColor } = useColor();
 
   const handleDelete = useCallback(() => {
     const canvas = fabricCanvasRef.current;
@@ -106,7 +75,6 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     saveToLocalStorage(canvas);
   }, [currentTool]);
 
-  // initialization function
   useEffect(() => {
     if (canvasRef.current) {
       const canvas = new fabric.Canvas(canvasRef.current, {
@@ -160,6 +128,14 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     }
   }, [currentTool, handleMouseDown, handleMouseMove, handleMouseUp]);
 
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (canvas) {
+      canvas.freeDrawingBrush.color = currentColor;
+      canvas.renderAll();
+    }
+  }, [currentColor]);
+
   useImperativeHandle(ref, () => ({
     addFileToCanvas: (file) => {
       const canvas = fabricCanvasRef.current;
@@ -167,7 +143,6 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
         addFileToCanvasWithPersistence(file, canvas);
       }
     },
-    updateColor: handleColorChange,
     saveCanvas: () => {
       const canvas = fabricCanvasRef.current;
       if (canvas) {
@@ -187,6 +162,11 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
         clearCanvas(canvas);
         canvas.renderAll();
       }
+    },
+    deleteSelected: handleDelete,
+    isObjectSelected: () => {
+      const canvas = fabricCanvasRef.current;
+      return canvas ? !!canvas.getActiveObject() : false;
     },
   }));
 
@@ -214,17 +194,12 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
             setShowPopupToolbar={setShowPopupToolbar}
             popupToolbarPosition={popupToolbarPosition}
             setPopupToolbarPosition={setPopupToolbarPosition}
-            currentColor={currentColor}
-            handleColorChange={handleColorChange}
-            handleDelete={handleDelete}
           />
         </div>
       </DragAndDrop>
       <Toolbar
         currentTool={currentTool}
         setCurrentTool={setCurrentTool}
-        currentColor={currentColor}
-        setCurrentColor={handleColorChange}
         onFileUpload={(file) => {
           if (fabricCanvasRef.current) {
             addFileToCanvasWithPersistence(file, fabricCanvasRef.current);

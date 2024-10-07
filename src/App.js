@@ -3,12 +3,13 @@ import './App.css';
 import Canvas from './components/Canvas';
 import Toolbar from './components/Toolbar';
 import DraggableColorPalette from './components/DraggableColorPalette';
+import { ColorProvider, useColor } from './components/ColorContext';
 
-function App() {
+function AppContent() {
   const [currentTool, setCurrentTool] = useState('select');
-  const [currentColor, setCurrentColor] = useState('#000000');
   const [showColorPalette, setShowColorPalette] = useState(false);
   const canvasRef = useRef(null);
+  const { currentColor, changeColor } = useColor();
 
   const handleFileUpload = (file) => {
     if (canvasRef.current) {
@@ -27,24 +28,27 @@ function App() {
       <Canvas 
         ref={canvasRef}
         currentTool={currentTool}
-        currentColor={currentColor}
         setCurrentTool={setCurrentTool}
       />
       <Toolbar 
         currentTool={currentTool}
         setCurrentTool={setCurrentTool}
         onFileUpload={handleFileUpload}
-        currentColor={currentColor}
-        setCurrentColor={setCurrentColor}
         isObjectSelected={canvasRef.current?.isObjectSelected || false}
         onDeleteSelected={handleDeleteSelected}
       />
       <DraggableColorPalette
-        currentColor={currentColor}
-        setCurrentColor={setCurrentColor}
         isVisible={showColorPalette}
       />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ColorProvider>
+      <AppContent />
+    </ColorProvider>
   );
 }
 

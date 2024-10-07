@@ -1,7 +1,41 @@
 import React, { useEffect, useCallback } from 'react';
 import PopupToolbar from './PopupToolbar';
+import { useColor } from './ColorContext';
+import { saveToLocalStorage } from './CanvasPersistence';
 
-const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupToolbarPosition, setPopupToolbarPosition, currentColor, handleColorChange, handleDelete }) => {
+const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupToolbarPosition, setPopupToolbarPosition }) => {
+    const { currentColor } = useColor();
+
+    const updateObjectColor = useCallback((obj, color) => {
+        if (obj.type === 'path') {
+            obj.set('stroke', color);
+        } else {
+            if (obj.stroke) obj.set('stroke', color);
+            if (obj.fill) obj.set('fill', color);
+        }
+    }, []);
+
+    const updateSelectedObjectsColor = useCallback((color) => {
+        if (fabricCanvas) {
+            const activeObject = fabricCanvas.getActiveObject();
+            if (activeObject) {
+                if (activeObject.type === 'activeSelection') {
+                    activeObject.forEachObject((obj) => {
+                        updateObjectColor(obj, color);
+                    });
+                } else {
+                    updateObjectColor(activeObject, color);
+                }
+                fabricCanvas.renderAll();
+                saveToLocalStorage(fabricCanvas);
+            }
+        }
+    }, [fabricCanvas, updateObjectColor]);
+
+    useEffect(() => {
+        updateSelectedObjectsColor(currentColor);
+    }, [currentColor, updateSelectedObjectsColor]);
+
     const updatePopupPosition = useCallback(() => {
         if (!fabricCanvas) return;
 
@@ -54,11 +88,7 @@ const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupT
                     left: `${popupToolbarPosition.left}px`,
                     zIndex: 1000,
                 }}>
-                    <PopupToolbar
-                        onDelete={handleDelete}
-                        onChangeColor={handleColorChange}
-                        currentColor={currentColor}
-                    />
+                    <PopupToolbar />
                 </div>
             )}
         </>
