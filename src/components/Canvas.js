@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { fabric } from 'fabric';
-import PopupToolbar from './PopupToolbar';
 import Toolbar from './Toolbar';
 import { handleDragOver } from './CanvasUtils';
-import { useCanvasHandlers } from './CanvasHandlers';
 import { handleTextboxMode } from './Textbox';
 import Drawing from './Drawing';
 import Camera from './Camera';
 import Square from './Square';
+import Selection from './Selection';
 import { 
   saveToLocalStorage, 
   loadFromLocalStorage, 
@@ -55,23 +54,6 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
   const handleColorChange = useCallback((color) => {
     updateSelectedObjectsColor(color);
   }, [updateSelectedObjectsColor]);
-
-  const handleSelection = useCallback(() => {
-    const canvas = fabricCanvasRef.current;
-    if (canvas) {
-      const activeObject = canvas.getActiveObject();
-      if (activeObject) {
-        setShowPopupToolbar(true);
-        const bounds = activeObject.getBoundingRect();
-        setPopupToolbarPosition({
-          top: bounds.top + bounds.height + 10,
-          left: bounds.left + bounds.width / 2
-        });
-      } else {
-        setShowPopupToolbar(false);
-      }
-    }
-  }, []);
 
   const handleDelete = useCallback(() => {
     const canvas = fabricCanvasRef.current;
@@ -146,21 +128,12 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
 
       window.addEventListener('resize', handleResize);
 
-      canvas.on('selection:created', handleSelection);
-      canvas.on('selection:updated', handleSelection);
-      canvas.on('selection:cleared', () => setShowPopupToolbar(false));
-      canvas.on('object:moving', handleSelection);
-
       return () => {
         window.removeEventListener('resize', handleResize);
-        canvas.off('selection:created', handleSelection);
-        canvas.off('selection:updated', handleSelection);
-        canvas.off('selection:cleared');
-        canvas.off('object:moving', handleSelection);
         canvas.dispose();
       };
     }
-  }, [handleSelection]);
+  }, []);
 
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
@@ -243,20 +216,16 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
             currentColor={currentColor}
           />
         )}
-        {showPopupToolbar && (
-          <div style={{
-            position: 'absolute',
-            top: `${popupToolbarPosition.top}px`,
-            left: `${popupToolbarPosition.left}px`,
-            zIndex: 1000,
-          }}>
-            <PopupToolbar
-              onDelete={handleDelete}
-              onChangeColor={handleColorChange}
-              currentColor={currentColor}
-            />
-          </div>
-        )}
+        <Selection
+          fabricCanvas={fabricCanvasRef.current}
+          showPopupToolbar={showPopupToolbar}
+          setShowPopupToolbar={setShowPopupToolbar}
+          popupToolbarPosition={popupToolbarPosition}
+          setPopupToolbarPosition={setPopupToolbarPosition}
+          currentColor={currentColor}
+          handleColorChange={handleColorChange}
+          handleDelete={handleDelete}
+        />
       </div>
       <Toolbar
         currentTool={currentTool}
