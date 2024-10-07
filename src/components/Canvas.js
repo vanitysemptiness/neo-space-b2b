@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { fabric } from 'fabric';
 import Toolbar from './Toolbar';
-import { handleDragOver } from './CanvasUtils';
 import { handleTextboxMode } from './Textbox';
 import Drawing from './Drawing';
 import Camera from './Camera';
 import Square from './Square';
 import Selection from './Selection';
+import DragAndDrop from './DragAndDrop';
 import { 
   saveToLocalStorage, 
   loadFromLocalStorage, 
@@ -106,6 +106,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     saveToLocalStorage(canvas);
   }, [currentTool]);
 
+  // initialization function
   useEffect(() => {
     if (canvasRef.current) {
       const canvas = new fabric.Canvas(canvasRef.current, {
@@ -191,42 +192,34 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
 
   return (
     <Camera canvas={fabricCanvasRef.current} currentTool={currentTool}>
-      <div
-        id="canvas-container"
-        onDragOver={handleDragOver}
-        onDrop={(e) => {
-          e.preventDefault();
-          const file = e.dataTransfer.files[0];
-          if (file && fabricCanvasRef.current) {
-            addFileToCanvasWithPersistence(file, fabricCanvasRef.current);
-          }
-        }}
-      >
-        <canvas ref={canvasRef} />
-        {currentTool === 'draw' && (
-          <Drawing
+      <DragAndDrop fabricCanvas={fabricCanvasRef.current}>
+        <div id="canvas-container">
+          <canvas ref={canvasRef} />
+          {currentTool === 'draw' && (
+            <Drawing
+              fabricCanvas={fabricCanvasRef.current}
+              currentColor={currentColor}
+              brushSize={brushSize}
+            />
+          )}
+          {currentTool === 'square' && (
+            <Square
+              fabricCanvas={fabricCanvasRef.current}
+              currentColor={currentColor}
+            />
+          )}
+          <Selection
             fabricCanvas={fabricCanvasRef.current}
+            showPopupToolbar={showPopupToolbar}
+            setShowPopupToolbar={setShowPopupToolbar}
+            popupToolbarPosition={popupToolbarPosition}
+            setPopupToolbarPosition={setPopupToolbarPosition}
             currentColor={currentColor}
-            brushSize={brushSize}
+            handleColorChange={handleColorChange}
+            handleDelete={handleDelete}
           />
-        )}
-        {currentTool === 'square' && (
-          <Square
-            fabricCanvas={fabricCanvasRef.current}
-            currentColor={currentColor}
-          />
-        )}
-        <Selection
-          fabricCanvas={fabricCanvasRef.current}
-          showPopupToolbar={showPopupToolbar}
-          setShowPopupToolbar={setShowPopupToolbar}
-          popupToolbarPosition={popupToolbarPosition}
-          setPopupToolbarPosition={setPopupToolbarPosition}
-          currentColor={currentColor}
-          handleColorChange={handleColorChange}
-          handleDelete={handleDelete}
-        />
-      </div>
+        </div>
+      </DragAndDrop>
       <Toolbar
         currentTool={currentTool}
         setCurrentTool={setCurrentTool}
