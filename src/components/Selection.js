@@ -63,6 +63,22 @@ const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupT
         }
     }, [fabricCanvas, setShowPopupToolbar, updatePopupPosition]);
 
+    const handleDelete = useCallback(() => {
+        if (fabricCanvas) {
+            const activeObject = fabricCanvas.getActiveObject();
+            if (activeObject) {
+                if (activeObject.type === 'activeSelection') {
+                    activeObject.forEachObject((obj) => fabricCanvas.remove(obj));
+                } else {
+                    fabricCanvas.remove(activeObject);
+                }
+                fabricCanvas.discardActiveObject().renderAll();
+                setShowPopupToolbar(false);
+                saveToLocalStorage(fabricCanvas);
+            }
+        }
+    }, [fabricCanvas, setShowPopupToolbar]);
+
     useEffect(() => {
         if (fabricCanvas) {
             fabricCanvas.on('selection:created', handleSelection);
@@ -88,7 +104,7 @@ const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupT
                     left: `${popupToolbarPosition.left}px`,
                     zIndex: 1000,
                 }}>
-                    <PopupToolbar />
+                    <PopupToolbar onDelete={handleDelete} />
                 </div>
             )}
         </>

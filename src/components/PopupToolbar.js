@@ -1,8 +1,11 @@
 import React from 'react';
 import { FiTrash2 } from 'react-icons/fi';
 import ColorPickerButton from './ColorPickerButton';
+import { useColor } from './ColorContext';
 
-const PopupToolbar = ({ onDelete, onChangeColor, currentColor }) => {
+const PopupToolbar = ({ onDelete }) => {
+  const { currentColor, changeColor } = useColor();
+
   return (
     <div className="popup-toolbar">
       <button onClick={onDelete}>
@@ -10,7 +13,7 @@ const PopupToolbar = ({ onDelete, onChangeColor, currentColor }) => {
       </button>
       <ColorPickerButton
         currentColor={currentColor}
-        setCurrentColor={onChangeColor}
+        setCurrentColor={changeColor}
       />
     </div>
   );
