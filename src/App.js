@@ -19,8 +19,12 @@ function AppContent() {
 
   const handleDeleteSelected = () => {
     if (canvasRef.current) {
-      canvasRef.current.deleteSelected();
+      canvasRef.current.clearCanvas();
     }
+  };
+
+  const isObjectSelected = () => {
+    return canvasRef.current ? canvasRef.current.isObjectSelected() : false;
   };
 
   return (
@@ -34,11 +38,13 @@ function AppContent() {
         currentTool={currentTool}
         setCurrentTool={setCurrentTool}
         onFileUpload={handleFileUpload}
-        isObjectSelected={canvasRef.current?.isObjectSelected || false}
+        isObjectSelected={isObjectSelected()}
         onDeleteSelected={handleDeleteSelected}
       />
       <DraggableColorPalette
         isVisible={showColorPalette}
+        currentColor={currentColor}
+        setCurrentColor={changeColor}
       />
     </div>
   );

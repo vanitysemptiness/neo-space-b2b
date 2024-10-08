@@ -21,7 +21,8 @@ export const clearCanvas = (canvas) => {
 
 export const setupCanvasPersistence = (canvas) => {
   canvas.on('object:modified', () => saveToLocalStorage(canvas));
-  canvas.on('path:created', () => saveToLocalStorage(canvas));
+  canvas.on('object:added', () => saveToLocalStorage(canvas));
+  canvas.on('object:removed', () => saveToLocalStorage(canvas));
 };
 
 export const addFileToCanvasWithPersistence = (file, canvas) => {
@@ -33,7 +34,6 @@ export const addFileToCanvasWithPersistence = (file, canvas) => {
       saveToLocalStorage(canvas);
     });
   } else {
-    // Handle non-image files (you can expand this part as needed)
     const text = new fabric.Text(file.name, {
       left: 100,
       top: 100,

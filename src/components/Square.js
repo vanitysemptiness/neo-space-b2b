@@ -17,14 +17,6 @@ const Square = ({ fabricCanvas, currentColor, setCurrentTool }) => {
       fill: currentColor,
       strokeWidth: 2,
       stroke: 'rgba(0,0,0,0.3)',
-      rx: 10,
-      ry: 10,
-      shadow: new fabric.Shadow({
-        color: 'rgba(0,0,0,0.3)',
-        blur: 10,
-        offsetX: 5,
-        offsetY: 5
-      }),
       selectable: false,
       evented: false,
     });

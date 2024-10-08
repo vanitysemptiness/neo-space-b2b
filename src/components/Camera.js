@@ -1,92 +1,89 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { fabric } from 'fabric';
 
-const Camera = ({ canvas, children, currentTool }) => {
+const Camera = ({ fabricCanvas, currentTool }) => {
   const [zoom, setZoom] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
   const [lastPointer, setLastPointer] = useState(null);
 
-  const handleWheel = useCallback((event) => {
-    if (event.ctrlKey && canvas && canvas.getContext()) {
+  const handleWheel = useCallback((opt) => {
+    const event = opt.e;
+    if (fabricCanvas) {
       event.preventDefault();
+      event.stopPropagation();
       const delta = event.deltaY;
-      let newZoom = zoom * (1 - delta / 500);
-      newZoom = Math.min(Math.max(0.1, newZoom), 5);
+      let newZoom = fabricCanvas.getZoom() * (1 - delta / 500);
+      newZoom = Math.min(Math.max(0.1, newZoom), 20);
 
-      const point = new fabric.Point(event.offsetX, event.offsetY);
-      canvas.zoomToPoint(point, newZoom);
+      const point = new fabric.Point(opt.pointer.x, opt.pointer.y);
+      fabricCanvas.zoomToPoint(point, newZoom);
       setZoom(newZoom);
-      canvas.renderAll();
     }
-  }, [canvas, zoom]);
+  }, [fabricCanvas]);
 
-  const handleMouseDown = useCallback((event) => {
-    if (canvas && canvas.getContext() && currentTool === 'hand') {
+  const handleMouseDown = useCallback((opt) => {
+    if (fabricCanvas && currentTool === 'hand') {
       setIsDragging(true);
-      setLastPointer(canvas.getPointer(event.e, true));
-      canvas.defaultCursor = 'grabbing';
-      canvas.setCursor('grabbing');
+      setLastPointer(opt.pointer);
+      fabricCanvas.defaultCursor = 'grabbing';
+      fabricCanvas.setCursor('grabbing');
     }
-  }, [canvas, currentTool]);
+  }, [fabricCanvas, currentTool]);
 
-  const handleMouseMove = useCallback((event) => {
-    if (isDragging && canvas && canvas.getContext() && currentTool === 'hand' && lastPointer) {
-      const currentPointer = canvas.getPointer(event.e, true);
+  const handleMouseMove = useCallback((opt) => {
+    if (isDragging && fabricCanvas && currentTool === 'hand' && lastPointer) {
+      const currentPointer = opt.pointer;
       const deltaX = currentPointer.x - lastPointer.x;
       const deltaY = currentPointer.y - lastPointer.y;
       
-      const vpt = canvas.viewportTransform;
+      const vpt = fabricCanvas.viewportTransform;
       vpt[4] += deltaX;
       vpt[5] += deltaY;
-      canvas.setViewportTransform(vpt);
-      canvas.renderAll();
+      fabricCanvas.setViewportTransform(vpt);
+      fabricCanvas.requestRenderAll();
 
       setLastPointer(currentPointer);
     }
-  }, [canvas, isDragging, lastPointer, currentTool]);
+  }, [fabricCanvas, isDragging, lastPointer, currentTool]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
     setLastPointer(null);
-    if (canvas && canvas.getContext() && currentTool === 'hand') {
-      canvas.defaultCursor = 'grab';
-      canvas.setCursor('grab');
+    if (fabricCanvas && currentTool === 'hand') {
+      fabricCanvas.defaultCursor = 'grab';
+      fabricCanvas.setCursor('grab');
     }
-  }, [canvas, currentTool]);
+  }, [fabricCanvas, currentTool]);
 
   useEffect(() => {
-    if (canvas && canvas.getContext()) {
-      canvas.on('mouse:down', handleMouseDown);
-      canvas.on('mouse:move', handleMouseMove);
-      canvas.on('mouse:up', handleMouseUp);
-      window.addEventListener('wheel', handleWheel, { passive: false });
+    if (fabricCanvas) {
+      fabricCanvas.on('mouse:wheel', handleWheel);
+      fabricCanvas.on('mouse:down', handleMouseDown);
+      fabricCanvas.on('mouse:move', handleMouseMove);
+      fabricCanvas.on('mouse:up', handleMouseUp);
 
       return () => {
-        canvas.off('mouse:down', handleMouseDown);
-        canvas.off('mouse:move', handleMouseMove);
-        canvas.off('mouse:up', handleMouseUp);
-        window.removeEventListener('wheel', handleWheel);
+        fabricCanvas.off('mouse:wheel', handleWheel);
+        fabricCanvas.off('mouse:down', handleMouseDown);
+        fabricCanvas.off('mouse:move', handleMouseMove);
+        fabricCanvas.off('mouse:up', handleMouseUp);
       };
     }
-  }, [canvas, handleMouseDown, handleMouseMove, handleMouseUp, handleWheel]);
+  }, [fabricCanvas, handleWheel, handleMouseDown, handleMouseMove, handleMouseUp]);
 
   useEffect(() => {
-    if (canvas && canvas.getContext()) {
+    if (fabricCanvas) {
       if (currentTool === 'hand') {
-        canvas.defaultCursor = 'grab';
-        canvas.hoverCursor = 'grab';
+        fabricCanvas.defaultCursor = 'grab';
+        fabricCanvas.hoverCursor = 'grab';
       } else {
-        canvas.defaultCursor = 'default';
-        canvas.hoverCursor = 'default';
+        fabricCanvas.defaultCursor = 'default';
+        fabricCanvas.hoverCursor = 'default';
       }
     }
-  }, [canvas, currentTool]);
+  }, [fabricCanvas, currentTool]);
 
-  return (
-    <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-      {children}
-    </div>
-  );
+  return null;
 };
 
 export default Camera;
