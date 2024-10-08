@@ -55,7 +55,8 @@ const ColorPickerButton = () => {
         '#9370DB', // Medium Purple
         '#BA55D3', // Medium Orchid
         '#DA70D6', // Orchid
-        '#EE82EE'  // Violet
+        '#EE82EE',  // Violet
+        '#000000'
       ],
       inline: false,
       margin: 10,
