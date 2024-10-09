@@ -1,14 +1,13 @@
 import React, { useRef } from 'react';
 import { FiUpload } from 'react-icons/fi';
-import { addFileToCanvas } from './CanvasUtils';
 
-const FileUpload = ({ fabricCanvas }) => {
+const FileUpload = ({ onFileUpload }) => {
   const fileInputRef = useRef(null);
 
-  const handleFileChange = async (event) => {
+  const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file && fabricCanvas) {
-      await addFileToCanvas(file, fabricCanvas);
+    if (file) {
+      onFileUpload(file);
     }
   };
 

@@ -4,14 +4,35 @@ import { fabricGif } from './fabricGif';
 const STORAGE_KEY = 'myDrawingAppCanvas';
 
 export const saveToLocalStorage = (canvas) => {
-  const json = canvas.toJSON(['gifSrc']);
+  const json = canvas.toJSON(['gifSrc', 'isGif']);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(json));
 };
 
 export const loadFromLocalStorage = async (canvas) => {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
-    await canvas.loadFromJSON(JSON.parse(saved), canvas.renderAll.bind(canvas));
+    await new Promise((resolve) => {
+      canvas.loadFromJSON(JSON.parse(saved), async () => {
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+          const obj = objects[i];
+          if (obj.isGif) {
+            const gifObj = await fabricGif(obj.gifSrc);
+            canvas.remove(obj);
+            canvas.add(gifObj);
+            gifObj.set({
+              left: obj.left,
+              top: obj.top,
+              scaleX: obj.scaleX,
+              scaleY: obj.scaleY,
+              angle: obj.angle,
+            });
+          }
+        }
+        canvas.renderAll();
+        resolve();
+      });
+    });
   }
 };
 

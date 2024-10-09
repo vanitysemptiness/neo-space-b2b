@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import './App.css';
 import Canvas from './components/Canvas';
 import Toolbar from './components/Toolbar';
@@ -11,30 +11,32 @@ function AppContent() {
   const canvasRef = useRef(null);
   const { currentColor, changeColor } = useColor();
 
-  const handleFileUpload = (file) => {
-    if (canvasRef.current) {
-      canvasRef.current.addFileToCanvas(file);
+  const handleFileUpload = useCallback((file) => {
+    if (canvasRef.current && canvasRef.current.handleFileUpload) {
+      canvasRef.current.handleFileUpload(file);
     }
-  };
+  }, []);
 
-  const handleDeleteSelected = () => {
-    if (canvasRef.current) {
+  const handleDeleteSelected = useCallback(() => {
+    if (canvasRef.current && canvasRef.current.clearCanvas) {
       canvasRef.current.clearCanvas();
     }
-  };
+  }, []);
 
-  const isObjectSelected = () => {
-    return canvasRef.current ? canvasRef.current.isObjectSelected() : false;
-  };
+  const isObjectSelected = useCallback(() => {
+    return canvasRef.current && canvasRef.current.isObjectSelected
+      ? canvasRef.current.isObjectSelected()
+      : false;
+  }, []);
 
   return (
     <div className="App">
-      <Canvas 
+      <Canvas
         ref={canvasRef}
         currentTool={currentTool}
         setCurrentTool={setCurrentTool}
       />
-      <Toolbar 
+      <Toolbar
         currentTool={currentTool}
         setCurrentTool={setCurrentTool}
         onFileUpload={handleFileUpload}

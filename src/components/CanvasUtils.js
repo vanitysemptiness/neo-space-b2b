@@ -1,5 +1,6 @@
 import { fabric } from 'fabric';
 import { fabricGif } from './fabricGif';
+import { saveToLocalStorage } from './CanvasPersistence';
 
 export const handleDragOver = (e) => {
   e.preventDefault();
@@ -26,6 +27,7 @@ export const addFileToCanvas = async (file, fabricCanvas) => {
         gif.set({ left: 100, top: 100 }); // Adjust position as needed
         fabricCanvas.add(gif);
         fabricCanvas.renderAll();
+        saveToLocalStorage(fabricCanvas);
       } else {
         console.error('Error loading GIF:', gif.error);
       }
@@ -44,6 +46,7 @@ const renderImage = (file, fabricCanvas) => {
       img.scaleToWidth(100);
       fabricCanvas.add(img);
       fabricCanvas.renderAll();
+      saveToLocalStorage(fabricCanvas);
     });
   };
   reader.readAsDataURL(file);
@@ -73,6 +76,7 @@ const renderGenericFileIcon = (file, fabricCanvas) => {
 
     fabricCanvas.add(group);
     fabricCanvas.renderAll();
+    saveToLocalStorage(fabricCanvas);
   });
 };
 

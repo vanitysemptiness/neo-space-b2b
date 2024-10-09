@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { fabric } from 'fabric';
 import { useColor } from './ColorContext';
 import Camera from './Camera';
@@ -13,7 +13,7 @@ import {
   clearCanvas, 
   setupCanvasPersistence
 } from './CanvasPersistence';
-import { setupAnimationLoop } from './CanvasUtils';
+import { setupAnimationLoop, addFileToCanvas } from './CanvasUtils';
 
 const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
   const canvasRef = useRef(null);
@@ -57,7 +57,6 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
       fabricCanvas.isDrawingMode = currentTool === 'draw';
       fabricCanvas.selection = currentTool === 'select';
 
-      // Reset event listeners
       fabricCanvas.off('mouse:down');
       fabricCanvas.off('mouse:move');
       fabricCanvas.off('mouse:up');
@@ -107,7 +106,14 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     }
   }, [fabricCanvas, currentColor, brushSize]);
 
+  const handleFileUpload = useCallback((file) => {
+    if (fabricCanvas) {
+      addFileToCanvas(file, fabricCanvas);
+    }
+  }, [fabricCanvas]);
+
   useImperativeHandle(ref, () => ({
+    handleFileUpload,
     saveCanvas: () => {
       if (fabricCanvas) {
         saveToLocalStorage(fabricCanvas);
@@ -158,7 +164,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
           brushSize={brushSize}
         />
       )}
-      <FileUpload fabricCanvas={fabricCanvas} />
+      <FileUpload onFileUpload={handleFileUpload} />
     </div>
   );
 });

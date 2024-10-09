@@ -25,6 +25,9 @@ export const fabricGif = async (gif, maxWidth, maxHeight, maxDuration) => {
       img.top = 200;
       img.left = 200;
 
+      img.isGif = true;
+      img.gifSrc = gif;
+
       img._render = function (ctx) {
         if (status === PAUSE || (status === STOP && framesIndex === 0)) return;
         const now = performance.now();
