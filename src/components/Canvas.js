@@ -23,6 +23,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
   const [popupToolbarPosition, setPopupToolbarPosition] = useState({ top: 0, left: 0 });
   const [brushSize, setBrushSize] = useState(5);
   const isDraggingRef = useRef(false);
+  const cursorRef = useRef(null);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -51,6 +52,14 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
       };
     }
   }, []);
+
+  const updateCursor = useCallback(() => {
+    if (cursorRef.current) {
+      cursorRef.current.style.width = `${brushSize}px`;
+      cursorRef.current.style.height = `${brushSize}px`;
+      cursorRef.current.style.backgroundColor = currentColor;
+    }
+  }, [brushSize, currentColor]);
 
   useEffect(() => {
     if (fabricCanvas) {
@@ -92,25 +101,57 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
           fabricCanvas.defaultCursor = 'grab';
           fabricCanvas.selection = true;
         });
+      } else if (currentTool === 'draw') {
+        fabricCanvas.defaultCursor = 'none';
+        fabricCanvas.hoverCursor = 'none';
+        fabricCanvas.freeDrawingCursor = 'none';
+        
+        if (!cursorRef.current) {
+          cursorRef.current = document.createElement('div');
+          cursorRef.current.className = 'cursor-dot';
+          document.body.appendChild(cursorRef.current);
+        }
+
+        updateCursor();
+
+        const updateCursorPosition = (e) => {
+          cursorRef.current.style.left = `${e.clientX}px`;
+          cursorRef.current.style.top = `${e.clientY}px`;
+        };
+
+        fabricCanvas.upperCanvasEl.addEventListener('mousemove', updateCursorPosition);
+
+        return () => {
+          fabricCanvas.upperCanvasEl.removeEventListener('mousemove', updateCursorPosition);
+          if (cursorRef.current) {
+            document.body.removeChild(cursorRef.current);
+            cursorRef.current = null;
+          }
+        };
       } else {
         fabricCanvas.defaultCursor = 'default';
         fabricCanvas.hoverCursor = 'default';
+        if (cursorRef.current) {
+          document.body.removeChild(cursorRef.current);
+          cursorRef.current = null;
+        }
       }
     }
-  }, [fabricCanvas, currentTool, currentColor, setCurrentTool]);
+  }, [fabricCanvas, currentTool, currentColor, setCurrentTool, updateCursor]);
 
   useEffect(() => {
     if (fabricCanvas) {
       fabricCanvas.freeDrawingBrush.color = currentColor;
       fabricCanvas.freeDrawingBrush.width = brushSize;
+      updateCursor();
     }
-  }, [fabricCanvas, currentColor, brushSize]);
+  }, [fabricCanvas, currentColor, brushSize, updateCursor]);
 
   const handleFileUpload = useCallback((file) => {
     if (fabricCanvas) {
       addFileToCanvas(file, fabricCanvas, setCurrentTool);
     }
-  }, [fabricCanvas]);
+  }, [fabricCanvas, setCurrentTool]);
 
   useImperativeHandle(ref, () => ({
     handleFileUpload,
@@ -164,7 +205,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
           brushSize={brushSize}
         />
       )}
-      <FileUpload onFileUpload={handleFileUpload} />
+      <FileUpload onFileUpload={handleFileUpload} setCurrentTool={setCurrentTool} />
     </div>
   );
 });
