@@ -108,7 +108,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
 
   const handleFileUpload = useCallback((file) => {
     if (fabricCanvas) {
-      addFileToCanvas(file, fabricCanvas);
+      addFileToCanvas(file, fabricCanvas, setCurrentTool);
     }
   }, [fabricCanvas]);
 

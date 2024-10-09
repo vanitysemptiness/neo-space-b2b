@@ -16,7 +16,7 @@ export const handleDrop = async (e, fabricCanvas) => {
   }
 };
 
-export const addFileToCanvas = async (file, fabricCanvas) => {
+export const addFileToCanvas = async (file, fabricCanvas, setCurrentTool) => {
   if (file && fabricCanvas) {
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
@@ -36,6 +36,7 @@ export const addFileToCanvas = async (file, fabricCanvas) => {
     } else {
       renderGenericFileIcon(file, fabricCanvas);
     }
+    setCurrentTool('select');
   }
 };
 
