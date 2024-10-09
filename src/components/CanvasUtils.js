@@ -1,40 +1,35 @@
 import { fabric } from 'fabric';
-
-export const initializeCanvas = (canvasElement, handleSelection) => {
-  const canvas = new fabric.Canvas(canvasElement, {
-    isDrawingMode: false,
-    width: window.innerWidth,
-    height: window.innerHeight,
-    selection: true,
-  });
-
-  canvas.on('selection:created', handleSelection);
-  canvas.on('selection:updated', handleSelection);
-  canvas.on('selection:cleared', handleSelection);
-
-  return canvas;
-};
+import { fabricGif } from './fabricGif';
 
 export const handleDragOver = (e) => {
   e.preventDefault();
   e.stopPropagation();
 };
 
-export const handleDrop = (e, fabricCanvas) => {
+export const handleDrop = async (e, fabricCanvas) => {
   e.preventDefault();
   e.stopPropagation();
   const file = e.dataTransfer.files[0];
   if (file) {
-    addFileToCanvas(file, fabricCanvas);
+    await addFileToCanvas(file, fabricCanvas);
   }
 };
 
-export const addFileToCanvas = (file, fabricCanvas) => {
+export const addFileToCanvas = async (file, fabricCanvas) => {
   if (file && fabricCanvas) {
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
     
-    if (['png', 'jpg', 'jpeg', 'gif'].includes(fileExtension)) {
+    if (fileExtension === 'gif') {
+      const gif = await fabricGif(file, 200, 200); // Adjust max width and height as needed
+      if (!gif.error) {
+        gif.set({ left: 100, top: 100 }); // Adjust position as needed
+        fabricCanvas.add(gif);
+        fabricCanvas.renderAll();
+      } else {
+        console.error('Error loading GIF:', gif.error);
+      }
+    } else if (['png', 'jpg', 'jpeg'].includes(fileExtension)) {
       renderImage(file, fabricCanvas);
     } else {
       renderGenericFileIcon(file, fabricCanvas);
@@ -76,15 +71,6 @@ const renderGenericFileIcon = (file, fabricCanvas) => {
       originY: 'center'
     });
 
-    icon.set({
-      originY: 'bottom',
-      top: -text.height / 2
-    });
-    text.set({
-      originY: 'top',
-      top: icon.height / 2
-    });
-
     fabricCanvas.add(group);
     fabricCanvas.renderAll();
   });
@@ -96,4 +82,11 @@ const getGenericFileIconSvg = () => {
       <path d="M14,2H6C4.9,2,4,2.9,4,4v16c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V8L14,2z M16,18H8v-2h8V18z M16,14H8v-2h8V14z M13,9V3.5L18.5,9H13z" fill="#000000"/>
     </svg>
   `;
+};
+
+export const setupAnimationLoop = (canvas) => {
+  fabric.util.requestAnimFrame(function render() {
+    canvas.renderAll();
+    fabric.util.requestAnimFrame(render);
+  });
 };

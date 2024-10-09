@@ -1,20 +1,11 @@
 import React from 'react';
-import { handleDragOver } from './CanvasUtils';
-import { addFileToCanvasWithPersistence } from './CanvasPersistence';
+import { handleDragOver, handleDrop } from './CanvasUtils';
 
 const DragAndDrop = ({ children, fabricCanvas }) => {
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && fabricCanvas) {
-      addFileToCanvasWithPersistence(file, fabricCanvas);
-    }
-  };
-
   return (
     <div
       onDragOver={handleDragOver}
-      onDrop={handleDrop}
+      onDrop={(e) => handleDrop(e, fabricCanvas)}
       style={{ width: '100%', height: '100%' }}
     >
       {children}

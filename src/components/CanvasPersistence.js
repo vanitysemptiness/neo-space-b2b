@@ -1,16 +1,17 @@
 import { fabric } from 'fabric';
+import { fabricGif } from './fabricGif';
 
 const STORAGE_KEY = 'myDrawingAppCanvas';
 
 export const saveToLocalStorage = (canvas) => {
-  const json = canvas.toJSON();
+  const json = canvas.toJSON(['gifSrc']);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(json));
 };
 
-export const loadFromLocalStorage = (canvas) => {
+export const loadFromLocalStorage = async (canvas) => {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
-    canvas.loadFromJSON(JSON.parse(saved), canvas.renderAll.bind(canvas));
+    await canvas.loadFromJSON(JSON.parse(saved), canvas.renderAll.bind(canvas));
   }
 };
 
@@ -25,8 +26,17 @@ export const setupCanvasPersistence = (canvas) => {
   canvas.on('object:removed', () => saveToLocalStorage(canvas));
 };
 
-export const addFileToCanvasWithPersistence = (file, canvas) => {
-  if (file.type.includes('image')) {
+export const addFileToCanvasWithPersistence = async (file, canvas) => {
+  if (file.type === 'image/gif') {
+    const gif = await fabricGif(file);
+    if (!gif.error) {
+      canvas.add(gif);
+      canvas.renderAll();
+      saveToLocalStorage(canvas);
+    } else {
+      console.error('Error loading GIF:', gif.error);
+    }
+  } else if (file.type.includes('image')) {
     fabric.Image.fromURL(URL.createObjectURL(file), (img) => {
       img.scaleToWidth(100);
       canvas.add(img);

@@ -11,6 +11,7 @@ import {
   setupCanvasPersistence, 
   addFileToCanvasWithPersistence 
 } from './CanvasPersistence';
+import { fabricGif } from './fabricGif';
 
 const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
   const canvasRef = useRef(null);
@@ -39,6 +40,13 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
 
       window.addEventListener('resize', handleResize);
 
+      // Set up animation loop
+      const render = () => {
+        canvas.renderAll();
+        fabric.util.requestAnimFrame(render);
+      };
+      fabric.util.requestAnimFrame(render);
+
       return () => {
         window.removeEventListener('resize', handleResize);
         canvas.dispose();
@@ -60,9 +68,20 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
   }, [fabricCanvas, currentColor]);
 
   useImperativeHandle(ref, () => ({
-    addFileToCanvas: (file) => {
+    addFileToCanvas: async (file) => {
       if (fabricCanvas && file) {
-        addFileToCanvasWithPersistence(file, fabricCanvas);
+        if (file.type === 'image/gif') {
+          const gif = await fabricGif(file, 200, 200); // Adjust max width and height as needed
+          if (!gif.error) {
+            gif.set({ left: 100, top: 100 }); // Adjust position as needed
+            fabricCanvas.add(gif);
+            fabricCanvas.renderAll();
+          } else {
+            console.error('Error loading GIF:', gif.error);
+          }
+        } else {
+          addFileToCanvasWithPersistence(file, fabricCanvas);
+        }
       }
     },
     saveCanvas: () => {
