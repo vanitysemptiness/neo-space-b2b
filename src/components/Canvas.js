@@ -128,6 +128,9 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
             cursorRef.current = null;
           }
         };
+      } else if (currentTool === 'square') {
+        fabricCanvas.defaultCursor = 'crosshair';
+        fabricCanvas.hoverCursor = 'crosshair';
       } else {
         fabricCanvas.defaultCursor = 'default';
         fabricCanvas.hoverCursor = 'default';
@@ -191,7 +194,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
         popupToolbarPosition={popupToolbarPosition}
         setPopupToolbarPosition={setPopupToolbarPosition}
       />
-      {currentTool === 'square' && (
+      {currentTool === 'square' && fabricCanvas && (
         <Square
           fabricCanvas={fabricCanvas}
           currentColor={currentColor}

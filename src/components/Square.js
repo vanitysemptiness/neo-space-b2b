@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { fabric } from 'fabric';
+import { saveToLocalStorage } from './CanvasPersistence';
 
 const Square = ({ fabricCanvas, currentColor, setCurrentTool }) => {
   const squareRef = useRef(null);
@@ -53,6 +54,7 @@ const Square = ({ fabricCanvas, currentColor, setCurrentTool }) => {
       });
       fabricCanvas.setActiveObject(squareRef.current);
       fabricCanvas.renderAll();
+      saveToLocalStorage(fabricCanvas);
     }
 
     // Switch to selection mode after drawing a square
