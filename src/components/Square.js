@@ -56,8 +56,6 @@ const Square = ({ fabricCanvas, currentColor, setCurrentTool }) => {
       fabricCanvas.renderAll();
       saveToLocalStorage(fabricCanvas);
     }
-
-    // Switch to selection mode after drawing a square
     setCurrentTool('select');
   }, [fabricCanvas, setCurrentTool]);
 
