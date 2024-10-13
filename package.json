@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "An infinite canvas app with dot grid",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "build:wasm": "cd wasm && wasm-pack build --target web",
+    "build:all": "npm run build:wasm && npm run build"
   },
   "dependencies": {
     "@melloware/coloris": "^0.21.1",

@@ -1,0 +1,21 @@
+neo-space-canvas/
+├── Dockerfile
+├── package.json
+├── webpack.config.js
+├── src/
+│   ├── components/
+│   ├── App.js
+│   └── index.js
+├── public/
+│   └── index.html
+├── rust/
+│   ├── Cargo.toml
+│   └── src/
+│       ├── lib.rs
+│       └── modules/
+│           ├── file_system.rs
+│           ├── csv_handler.rs
+│           ├── pdf_handler.rs
+│           └── image_handler.rs
+└── scripts/
+    └── build.sh

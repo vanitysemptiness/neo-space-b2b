@@ -8,9 +8,34 @@ find the live copy at: https://neospacecanvas.com/
 the simple stuff (canvas and basic upload and draw functions are done in JS)
 the memorey management, rendering of complex screen objects and render culling Rust WASM.
 
-build n run
+Project Setup
+---
+two ways to get this to run at `localhost:8080`...
+
+###### Running with the docker container
+To build and run the Docker container:
 ```bash
-npm run build
-npm start
+docker build -t neo-space-canvas .
+docker run -p 8080:80 neo-space-canvas
 ```
 
+###### Running without the docker container (but why would you?)
+Build the WASM module:
+```bash
+cd wasm && wasm-pack build --target web
+```
+
+Install npm dependencies:
+```bash
+npm install
+```
+
+Build the entire project:
+```bash
+npm run build:all
+```
+
+To run the project in development mode:
+```bash
+npm start
+```
