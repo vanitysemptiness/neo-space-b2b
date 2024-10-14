@@ -1,56 +1,69 @@
+import React, { useEffect, useRef } from 'react';
 import { fabric } from 'fabric';
 
-let textboxRef = null;
+const Textbox = ({ fabricCanvas, currentColor, currentTool, setCurrentTool }) => {
+  const textboxRef = useRef(null);
+  const startPointRef = useRef(null);
 
-const startDrawing = (canvas, pointer, color) => {
-  textboxRef = new fabric.Textbox('', {
-    left: pointer.x,
-    top: pointer.y,
-    width: 0,
-    height: 0,
-    fontSize: 20,
-    fill: '#000000',
-    backgroundColor: color,
-    selectable: false,
-    evented: false,
-  });
-  canvas.add(textboxRef);
+  useEffect(() => {
+    if (!fabricCanvas || currentTool !== 'textbox') return;
+
+    const handleMouseDown = (e) => {
+      const pointer = fabricCanvas.getPointer(e.e);
+      startPointRef.current = pointer;
+      textboxRef.current = new fabric.Textbox('', {
+        left: pointer.x,
+        top: pointer.y,
+        fontSize: 20,
+        fill: currentColor,
+        width: 0,
+        height: 0,
+        selectable: false,
+        evented: false,
+      });
+      fabricCanvas.add(textboxRef.current);
+    };
+
+    const handleMouseMove = (e) => {
+      if (!textboxRef.current || !startPointRef.current) return;
+
+      const pointer = fabricCanvas.getPointer(e.e);
+      const width = Math.abs(startPointRef.current.x - pointer.x);
+      const height = Math.abs(startPointRef.current.y - pointer.y);
+
+      textboxRef.current.set({
+        width: Math.max(width, 50),  // Minimum width of 50
+        height: Math.max(height, 20)  // Minimum height of 20
+      });
+      fabricCanvas.renderAll();
+    };
+
+    const handleMouseUp = () => {
+      if (textboxRef.current) {
+        textboxRef.current.set({
+          selectable: true,
+          evented: true,
+        });
+        fabricCanvas.setActiveObject(textboxRef.current);
+        fabricCanvas.renderAll();
+      }
+      textboxRef.current = null;
+      startPointRef.current = null;
+      setCurrentTool('select');
+    };
+
+    fabricCanvas.on('mouse:down', handleMouseDown);
+    fabricCanvas.on('mouse:move', handleMouseMove);
+    fabricCanvas.on('mouse:up', handleMouseUp);
+
+    return () => {
+      fabricCanvas.off('mouse:down', handleMouseDown);
+      fabricCanvas.off('mouse:move', handleMouseMove);
+      fabricCanvas.off('mouse:up', handleMouseUp);
+    };
+  }, [fabricCanvas, currentColor, currentTool, setCurrentTool]);
+
+  return null;
 };
 
-const drawTextbox = (canvas, startPoint, pointer) => {
-  if (!textboxRef) return;
-
-  const left = Math.min(startPoint.x, pointer.x);
-  const top = Math.min(startPoint.y, pointer.y);
-  const width = Math.abs(startPoint.x - pointer.x);
-  const height = Math.abs(startPoint.y - pointer.y);
-
-  textboxRef.set({
-    left: left,
-    top: top,
-    width: width,
-    height: height
-  });
-  canvas.renderAll();
-};
-
-const finishDrawing = (canvas, setCurrentTool) => {
-  if (!textboxRef) return;
-
-  textboxRef.set({
-    selectable: true,
-    evented: true,
-  });
-  canvas.setActiveObject(textboxRef);
-  canvas.renderAll();
-  textboxRef = null;
-
-  // Switch to selection mode after creating a textbox
-  setCurrentTool('select');
-};
-
-export const handleTextboxMode = {
-  mousedown: startDrawing,
-  mousemove: drawTextbox,
-  mouseup: finishDrawing,
-};
+export default Textbox;
