@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "An infinite canvas app with dot grid",
   "scripts": {
-    "start": "webpack serve --mode development",
-    "build": "webpack --mode production",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "start-pack": "webpack serve --mode development",
+    "build0-pack": "webpack --mode production",
     "build:wasm": "cd wasm && wasm-pack build --target web",
     "build:all": "npm run build:wasm && npm run build"
   },

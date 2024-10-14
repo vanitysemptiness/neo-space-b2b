@@ -45,15 +45,6 @@ function Toolbar({
           {tool.icon}
         </button>
       ))}
-      {currentTool === 'select' && isObjectSelected && (
-        <button
-          onClick={onDeleteSelected}
-          className="tool-button"
-          title="Delete selected"
-        >
-          <FiTrash2 size={20} color="red" />
-        </button>
-      )}
       <input
         type="file"
         ref={fileInputRef}
