@@ -1,7 +1,5 @@
 [workspace]
-members = [
-    "hello"
-]
+members = []
 
 [profile.release]
 opt-level = "s"

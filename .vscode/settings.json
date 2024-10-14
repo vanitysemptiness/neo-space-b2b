@@ -1,0 +1,6 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./wasm/Cargo.toml",
+    ],
+    "rust-analyzer.cargo.features": "all"
+}
