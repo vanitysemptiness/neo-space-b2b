@@ -12,6 +12,12 @@ Project Setup
 ---
 two ways to get this to run at `localhost:8080`...
 
+Right now the WASM features are experimental so you can just run the HTML/JS
+```bash
+npm run build
+npm start
+```
+
 ###### Running with the docker container
 To build and run the Docker container:
 ```bash
@@ -23,19 +29,4 @@ docker run -p 8080:80 neo-space-canvas
 Build the WASM module:
 ```bash
 cd wasm && wasm-pack build --target web
-```
-
-Install npm dependencies:
-```bash
-npm install
-```
-
-Build the entire project:
-```bash
-npm run build:all
-```
-
-To run the project in development mode:
-```bash
-npm start
 ```
