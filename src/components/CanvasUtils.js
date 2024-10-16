@@ -16,35 +16,58 @@ export const handleDrop = async (e, fabricCanvas) => {
   }
 };
 
-export const addFileToCanvas = async (file, fabricCanvas, setCurrentTool) => {
+const getCenterPoint = (fabricCanvas) => {
+  const viewportTransform = fabricCanvas.viewportTransform;
+  const zoom = fabricCanvas.getZoom();
+  const center = fabricCanvas.getCenter();
+  return {
+    x: (center.left - viewportTransform[4]) / zoom,
+    y: (center.top - viewportTransform[5]) / zoom
+  };
+};
+
+export const addFileToCanvas = async (file, fabricCanvas) => {
   if (file && fabricCanvas) {
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
+    const centerPoint = getCenterPoint(fabricCanvas);
     
     if (fileExtension === 'gif') {
-      const gif = await fabricGif(file, 200, 200); // Adjust max width and height as needed
+      const gif = await fabricGif(file, 200, 200);
       if (!gif.error) {
-        gif.set({ left: 100, top: 100 }); // Adjust position as needed
+        gif.set({
+          left: centerPoint.x,
+          top: centerPoint.y,
+          originX: 'center',
+          originY: 'center'
+        });
         fabricCanvas.add(gif);
         fabricCanvas.renderAll();
         saveToLocalStorage(fabricCanvas);
       } else {
         console.error('Error loading GIF:', gif.error);
       }
+    } else if (fileExtension === 'csv') {
+      renderCSVIcon(file, fabricCanvas, centerPoint);
     } else if (['png', 'jpg', 'jpeg'].includes(fileExtension)) {
-      renderImage(file, fabricCanvas);
+      renderImage(file, fabricCanvas, centerPoint);
     } else {
-      renderGenericFileIcon(file, fabricCanvas);
+      renderGenericFileIcon(file, fabricCanvas, centerPoint);
     }
-    setCurrentTool('select');
   }
 };
 
-const renderImage = (file, fabricCanvas) => {
+const renderImage = (file, fabricCanvas, centerPoint) => {
   const reader = new FileReader();
   reader.onload = (e) => {
     fabric.Image.fromURL(e.target.result, (img) => {
       img.scaleToWidth(100);
+      img.set({
+        left: centerPoint.x,
+        top: centerPoint.y,
+        originX: 'center',
+        originY: 'center'
+      });
       fabricCanvas.add(img);
       fabricCanvas.renderAll();
       saveToLocalStorage(fabricCanvas);
@@ -53,7 +76,33 @@ const renderImage = (file, fabricCanvas) => {
   reader.readAsDataURL(file);
 };
 
-const renderGenericFileIcon = (file, fabricCanvas) => {
+const renderCSVIcon = (file, fabricCanvas, centerPoint) => {
+  fabric.Image.fromURL('/icons/csv.png', (img) => {
+    img.scaleToWidth(50);
+
+    const text = new fabric.Text(file.name, {
+      fontSize: 14,
+      originX: 'center',
+      originY: 'top',
+      top: img.height * img.scaleY + 10,
+      width: 100,
+      textAlign: 'center'
+    });
+
+    const group = new fabric.Group([img, text], {
+      left: centerPoint.x,
+      top: centerPoint.y,
+      originX: 'center',
+      originY: 'center'
+    });
+
+    fabricCanvas.add(group);
+    fabricCanvas.renderAll();
+    saveToLocalStorage(fabricCanvas);
+  });
+};
+
+const renderGenericFileIcon = (file, fabricCanvas, centerPoint) => {
   const iconSvg = getGenericFileIconSvg();
   fabric.loadSVGFromString(iconSvg, (objects, options) => {
     const icon = fabric.util.groupSVGElements(objects, options);
@@ -69,8 +118,8 @@ const renderGenericFileIcon = (file, fabricCanvas) => {
     });
 
     const group = new fabric.Group([icon, text], {
-      left: 100,
-      top: 100,
+      left: centerPoint.x,
+      top: centerPoint.y,
       originX: 'center',
       originY: 'center'
     });

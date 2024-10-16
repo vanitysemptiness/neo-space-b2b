@@ -26,14 +26,12 @@ const Textbox = ({ fabricCanvas, currentColor, currentTool, setCurrentTool }) =>
 
     const handleMouseMove = (e) => {
       if (!textboxRef.current || !startPointRef.current) return;
-
       const pointer = fabricCanvas.getPointer(e.e);
       const width = Math.abs(startPointRef.current.x - pointer.x);
       const height = Math.abs(startPointRef.current.y - pointer.y);
-
       textboxRef.current.set({
-        width: Math.max(width, 50),  // Minimum width of 50
-        height: Math.max(height, 20)  // Minimum height of 20
+        width: Math.max(width, 50), // Minimum width of 50
+        height: Math.max(height, 20) // Minimum height of 20
       });
       fabricCanvas.renderAll();
     };
@@ -64,6 +62,44 @@ const Textbox = ({ fabricCanvas, currentColor, currentTool, setCurrentTool }) =>
   }, [fabricCanvas, currentColor, currentTool, setCurrentTool]);
 
   return null;
+};
+
+export const handleTextboxMode = {
+  mousedown: (fabricCanvas, pointer, currentColor) => {
+    const textbox = new fabric.Textbox('', {
+      left: pointer.x,
+      top: pointer.y,
+      fontSize: 20,
+      fill: currentColor,
+      width: 0,
+      height: 0,
+      selectable: false,
+      evented: false,
+    });
+    fabricCanvas.add(textbox);
+    return textbox;
+  },
+  mousemove: (fabricCanvas, pointer, startPoint, textbox) => {
+    if (!textbox) return;
+    const width = Math.abs(startPoint.x - pointer.x);
+    const height = Math.abs(startPoint.y - pointer.y);
+    textbox.set({
+      width: Math.max(width, 50),
+      height: Math.max(height, 20)
+    });
+    fabricCanvas.renderAll();
+  },
+  mouseup: (fabricCanvas, textbox, setCurrentTool) => {
+    if (textbox) {
+      textbox.set({
+        selectable: true,
+        evented: true,
+      });
+      fabricCanvas.setActiveObject(textbox);
+      fabricCanvas.renderAll();
+    }
+    setCurrentTool('select');
+  }
 };
 
 export default Textbox;
