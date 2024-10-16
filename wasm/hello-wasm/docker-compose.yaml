@@ -1,0 +1,9 @@
+version: '3'
+services:
+  hello-wasm:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/usr/src/app
+    command: sh -c "wasm-pack build --target web && http-server -p 8080"
