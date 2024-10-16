@@ -62,13 +62,24 @@ const renderImage = (file, fabricCanvas, centerPoint) => {
   reader.onload = (e) => {
     fabric.Image.fromURL(e.target.result, (img) => {
       img.scaleToWidth(100);
-      img.set({
+
+      const text = new fabric.Text(file.name, {
+        fontSize: 14,
+        originX: 'center',
+        originY: 'top',
+        top: img.height * img.scaleY / 2 + 10,
+        left: 0,
+        textAlign: 'center'
+      });
+
+      const group = new fabric.Group([img, text], {
         left: centerPoint.x,
         top: centerPoint.y,
         originX: 'center',
         originY: 'center'
       });
-      fabricCanvas.add(img);
+
+      fabricCanvas.add(group);
       fabricCanvas.renderAll();
       saveToLocalStorage(fabricCanvas);
     });
@@ -85,7 +96,7 @@ const renderCSVIcon = (file, fabricCanvas, centerPoint) => {
       originX: 'center',
       originY: 'top',
       top: img.height * img.scaleY + 10,
-      width: 100,
+      left: 0,
       textAlign: 'center'
     });
 
@@ -113,7 +124,7 @@ const renderGenericFileIcon = (file, fabricCanvas, centerPoint) => {
       originX: 'center',
       originY: 'top',
       top: icon.height + 10,
-      width: 100,
+      left: 0,
       textAlign: 'center'
     });
 
