@@ -17,46 +17,11 @@ const ColorPickerButton = () => {
       closeButton: true,
       clearButton: false,
       swatches: [
-        '#FF0000', // Red
-        '#FF4500', // Orange
-        '#FFFF00', // Yellow
-        '#00FF00', // Lime
-        '#00BFFF', // Sky Blue
-        '#0000FF', // Blue
-        '#8B00FF', // Purple
-        '#FF00FF', // Magenta
-        '#FFFFFF', // White
-        '#F5F5F5', // Soft White
-        '#FFFAF0', // Ivory
-        '#FAF0E6', // Linen
-        '#FDF5E6', // Old Lace
-        '#FFFACD', // Lemon Chiffon
-        '#E0FFFF', // Light Cyan
-        '#B0E0E6', // Powder Blue
-        '#ADD8E6', // Light Blue
-        '#87CEEB', // Sky Blue
-        '#87CEFA', // Light Sky Blue
-        '#00CED1', // Dark Turquoise
-        '#40E0D0', // Turquoise
-        '#48D1CC', // Medium Turquoise
-        '#00FA9A', // Medium Spring Green
-        '#00FF7F', // Spring Green
-        '#7CFC00', // Lawn Green
-        '#ADFF2F', // Green-Yellow
-        '#FFD700', // Gold
-        '#DAA520', // Goldenrod
-        '#CD853F', // Peru
-        '#D2691E', // Chocolate
-        '#8B4513', // Saddle Brown
-        '#A0522D', // Sienna
-        '#800080', // Purple
-        '#663399', // Rebecca Purple
-        '#4B0082', // Indigo
-        '#9370DB', // Medium Purple
-        '#BA55D3', // Medium Orchid
-        '#DA70D6', // Orchid
-        '#EE82EE',  // Violet
-        '#000000'
+        '#FF0000', '#FF4500', '#FFFF00', '#00FF00', '#00BFFF', '#0000FF', '#8B00FF', '#FF00FF',
+        '#FFFFFF', '#F5F5F5', '#FFFAF0', '#FAF0E6', '#FDF5E6', '#FFFACD', '#E0FFFF', '#B0E0E6',
+        '#ADD8E6', '#87CEEB', '#87CEFA', '#00CED1', '#40E0D0', '#48D1CC', '#00FA9A', '#00FF7F',
+        '#7CFC00', '#ADFF2F', '#FFD700', '#DAA520', '#CD853F', '#D2691E', '#8B4513', '#A0522D',
+        '#800080', '#663399', '#4B0082', '#9370DB', '#BA55D3', '#DA70D6', '#EE82EE', '#000000'
       ],
       inline: false,
       margin: 10,
