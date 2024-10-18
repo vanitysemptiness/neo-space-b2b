@@ -18,12 +18,14 @@ import { setupAnimationLoop, addFileToCanvas } from './CanvasUtils';
 const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
   const canvasRef = useRef(null);
   const [fabricCanvas, setFabricCanvas] = useState(null);
-  const { currentColor } = useColor();
+  const { currentColor, changeColor } = useColor();
   const [showPopupToolbar, setShowPopupToolbar] = useState(false);
   const [popupToolbarPosition, setPopupToolbarPosition] = useState({ top: 0, left: 0 });
   const [brushSize, setBrushSize] = useState(5);
   const isDraggingRef = useRef(false);
   const cursorRef = useRef(null);
+  const activeObjectRef = useRef(null);
+  const startPointRef = useRef(null);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -53,6 +55,22 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (fabricCanvas) {
+      fabricCanvas.freeDrawingBrush.color = currentColor;
+      const activeObject = fabricCanvas.getActiveObject();
+      if (activeObject) {
+        if (activeObject.type === 'path') {
+          activeObject.set('stroke', currentColor);
+        } else {
+          if (activeObject.stroke) activeObject.set('stroke', currentColor);
+          if (activeObject.fill) activeObject.set('fill', currentColor);
+        }
+        fabricCanvas.renderAll();
+      }
+    }
+  }, [currentColor, fabricCanvas]);
+
   const updateCursor = useCallback(() => {
     if (cursorRef.current) {
       cursorRef.current.style.width = `${brushSize}px`;
@@ -76,12 +94,13 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
   const handleMouseDown = useCallback((e) => {
     if (!fabricCanvas) return;
     const pointer = fabricCanvas.getPointer(e.e);
+    startPointRef.current = pointer;
     switch (currentTool) {
       case 'square':
-        Square.handleMouseDown(fabricCanvas, pointer, currentColor);
+        activeObjectRef.current = Square.handleMouseDown(fabricCanvas, pointer, currentColor);
         break;
       case 'textbox':
-        Textbox.handleMouseDown(fabricCanvas, pointer, currentColor);
+        activeObjectRef.current = Textbox.handleMouseDown(fabricCanvas, pointer, currentColor);
         break;
       case 'hand':
         isDraggingRef.current = true;
@@ -97,7 +116,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     const pointer = fabricCanvas.getPointer(e.e);
     switch (currentTool) {
       case 'square':
-        Square.handleMouseMove(fabricCanvas, pointer);
+        Square.handleMouseMove(fabricCanvas, activeObjectRef.current, pointer, startPointRef.current);
         break;
       case 'hand':
         if (isDraggingRef.current) {
@@ -115,18 +134,21 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     if (!fabricCanvas) return;
     switch (currentTool) {
       case 'square':
-        Square.handleMouseUp(fabricCanvas);
+        Square.handleMouseUp(fabricCanvas, activeObjectRef.current);
+        setCurrentTool('select');
         break;
       case 'textbox':
-        Textbox.handleMouseUp(fabricCanvas);
+        Textbox.handleMouseUp(fabricCanvas, activeObjectRef.current);
+        setCurrentTool('select');
         break;
       case 'hand':
         isDraggingRef.current = false;
-        fabricCanvas.selection = true;
+        fabricCanvas.selection = false;
         break;
     }
     saveToLocalStorage(fabricCanvas);
-    setCurrentTool('select');
+    activeObjectRef.current = null;
+    startPointRef.current = null;
   }, [fabricCanvas, currentTool, setCurrentTool]);
 
   useEffect(() => {
@@ -144,7 +166,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
         fabricCanvas.freeDrawingBrush.width = brushSize;
         fabricCanvas.defaultCursor = 'none';
         fabricCanvas.hoverCursor = 'none';
-        fabricCanvas.freeDrawingCursor = 'none';
+        fabricCanvas.freeDrawingCursor = 'crosshair';
         if (!cursorRef.current) {
           cursorRef.current = document.createElement('div');
           cursorRef.current.className = 'cursor-dot';
@@ -177,8 +199,26 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool }, ref) => {
     }
   }, [fabricCanvas]);
 
+  const handleColorChange = useCallback((newColor) => {
+    changeColor(newColor);
+    if (fabricCanvas) {
+      fabricCanvas.freeDrawingBrush.color = newColor;
+      const activeObject = fabricCanvas.getActiveObject();
+      if (activeObject) {
+        if (activeObject.type === 'path') {
+          activeObject.set('stroke', newColor);
+        } else {
+          if (activeObject.stroke) activeObject.set('stroke', newColor);
+          if (activeObject.fill) activeObject.set('fill', newColor);
+        }
+        fabricCanvas.renderAll();
+      }
+    }
+  }, [fabricCanvas, changeColor]);
+
   useImperativeHandle(ref, () => ({
     handleFileUpload,
+    handleColorChange,
     saveCanvas: () => {
       if (fabricCanvas) {
         saveToLocalStorage(fabricCanvas);

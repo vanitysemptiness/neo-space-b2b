@@ -1,10 +1,8 @@
 import { fabric } from 'fabric';
 
 class Square {
-  static activeSquare = null;
-
   static handleMouseDown(canvas, pointer, color) {
-    this.activeSquare = new fabric.Rect({
+    const square = new fabric.Rect({
       left: pointer.x,
       top: pointer.y,
       width: 0,
@@ -13,29 +11,31 @@ class Square {
       selectable: false,
       evented: false,
     });
-    canvas.add(this.activeSquare);
+    canvas.add(square);
+    return square;
   }
 
-  static handleMouseMove(canvas, pointer) {
-    if (!this.activeSquare) return;
-    this.activeSquare.set({
-      width: Math.abs(pointer.x - this.activeSquare.left),
-      height: Math.abs(pointer.y - this.activeSquare.top),
-      left: Math.min(pointer.x, this.activeSquare.left),
-      top: Math.min(pointer.y, this.activeSquare.top)
+  static handleMouseMove(canvas, square, pointer, startPoint) {
+    if (!square) return;
+    const width = Math.abs(startPoint.x - pointer.x);
+    const height = Math.abs(startPoint.y - pointer.y);
+    square.set({
+      left: Math.min(startPoint.x, pointer.x),
+      top: Math.min(startPoint.y, pointer.y),
+      width: width,
+      height: height
     });
     canvas.renderAll();
   }
 
-  static handleMouseUp(canvas) {
-    if (!this.activeSquare) return;
-    this.activeSquare.set({
+  static handleMouseUp(canvas, square) {
+    if (!square) return;
+    square.set({
       selectable: true,
       evented: true,
     });
-    canvas.setActiveObject(this.activeSquare);
+    canvas.setActiveObject(square);
     canvas.renderAll();
-    this.activeSquare = null;
   }
 }
 

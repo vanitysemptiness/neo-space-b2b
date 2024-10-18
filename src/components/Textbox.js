@@ -1,10 +1,8 @@
 import { fabric } from 'fabric';
 
 class Textbox {
-  static activeTextbox = null;
-
   static handleMouseDown(canvas, pointer, color) {
-    this.activeTextbox = new fabric.Textbox('', {
+    const textbox = new fabric.Textbox('', {
       left: pointer.x,
       top: pointer.y,
       fontSize: 20,
@@ -13,19 +11,19 @@ class Textbox {
       selectable: false,
       evented: false,
     });
-    canvas.add(this.activeTextbox);
+    canvas.add(textbox);
+    return textbox;
   }
 
-  static handleMouseUp(canvas) {
-    if (!this.activeTextbox) return;
-    this.activeTextbox.set({
+  static handleMouseUp(canvas, textbox) {
+    if (!textbox) return;
+    textbox.set({
       selectable: true,
       evented: true,
     });
-    canvas.setActiveObject(this.activeTextbox);
-    this.activeTextbox.enterEditing();
+    canvas.setActiveObject(textbox);
+    textbox.enterEditing();
     canvas.renderAll();
-    this.activeTextbox = null;
   }
 }
 
