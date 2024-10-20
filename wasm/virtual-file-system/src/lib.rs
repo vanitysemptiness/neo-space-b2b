@@ -23,6 +23,60 @@ pub enum FileType {
     Other(String),
 }
 
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
+pub enum SqlDialect {
+    PostgreSQL,
+    MySQL,
+    SQLite
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
+pub enum DataType {
+    Int64,
+    Float64,
+    Utf8
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
+pub struct Field {
+    name: String,
+    data_type: DataType,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
+pub struct Schema {
+    fields: Vec<Field>,
+}}
+
+
+impl Schema {
+    pub fn to_sql(&self, dialect: SqlDialect, table_name: &str) -> String {
+        let columns: Vec<String> = self.fields.iter().map(|field| {
+            let sql_type = match (dialect, &field.data_type) {
+                (SqlDialect::PostgreSQL, DataType::Int64) => "BIGINT",
+                (SqlDialect::PostgreSQL, DataType::Float64) => "DOUBLE PRECISION",
+                (SqlDialect::PostgreSQL, DataType::Utf8) => "TEXT",
+                (SqlDialect::MySQL, DataType::Int64) => "BIGINT",
+                (SqlDialect::MySQL, DataType::Float64) => "DOUBLE",
+                (SqlDialect::MySQL, DataType::Utf8) => "TEXT",
+                (SqlDialect::SQLite, DataType::Int64) => "INTEGER",
+                (SqlDialect::SQLite, DataType::Float64) => "REAL",
+                (SqlDialect::SQLite, DataType::Utf8) => "TEXT",
+            };
+            format!("    {} {}", field.name, sql_type)
+        }).collect();
+
+        format!("CREATE TABLE {} (\n{}\n);", table_name, columns.join(",\n"))
+    }
+}
+
+// Function to parse the schema string
+pub fn parse_schema(schema_str: &str) -> Result<Schema, Box<dyn std::error::Error>> {
+    let schema_str = schema_str.replace("Schema", "").trim().to_string();
+    let schema: Schema = serde_json::from_str(&schema_str)?;
+    Ok(schema)
+}
+
 #[wasm_bindgen]
 pub struct VirtualFileSystem {
     files: HashMap<String, VirtualFile>,
@@ -112,10 +166,58 @@ impl VirtualFileSystem {
     }
 }
 
+#[wasm_bindgen]
+pub fn get_csv_schema(csv_content: &str) -> Result<String, JsValue> {
+    let mut lines = csv_content.lines();
+    let header = lines.next().ok_or_else(|| JsValue::from_str("Empty CSV"))?;
+    let first_row = lines.next().ok_or_else(|| JsValue::from_str("Only header in CSV"))?;
+
+    let columns: Vec<&str> = header.split(',').collect();
+    let values: Vec<&str> = first_row.split(',').collect();
+
+    if columns.len() != values.len() {
+        return Err(JsValue::from_str("Mismatched header and data columns"));
+    }
+
+    let mut schema = String::from("Schema { fields: [");
+    for (i, (col, val)) in columns.iter().zip(values.iter()).enumerate() {
+        let data_type = if val.parse::<i64>().is_ok() {
+            "Int64"
+        } else if val.parse::<f64>().is_ok() {
+            "Float64"
+        } else {
+            "Utf8"
+        };
+        schema.push_str(&format!("Field {{ name: \"{}\", data_type: {} }}", col, data_type));
+        if i < columns.len() - 1 {
+            schema.push_str(", ");
+        }
+    }
+    schema.push_str("] }");
+
+    Ok(schema)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use wasm_bindgen_test::*;
+
+    #[wasm_bindgen_test]
+    fn test_get_csv_schema() {
+        let csv_content = "id,name,age\n1,Alice,30\n2,Bob,25\n3,Charlie,35";
+        let schema = get_csv_schema(csv_content).unwrap();
+        
+        let expected_schema = "Schema { \
+            fields: [\
+                Field { name: \"id\", data_type: Int64 }, \
+                Field { name: \"name\", data_type: Utf8 }, \
+                Field { name: \"age\", data_type: Int64 }\
+            ] \
+        }";
+    
+        assert_eq!(schema, expected_schema);
+    }
 
     #[wasm_bindgen_test]
     fn test_create_and_read_file() {
