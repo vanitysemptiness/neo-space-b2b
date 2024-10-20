@@ -23,60 +23,6 @@ pub enum FileType {
     Other(String),
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub enum SqlDialect {
-    PostgreSQL,
-    MySQL,
-    SQLite
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub enum DataType {
-    Int64,
-    Float64,
-    Utf8
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct Field {
-    name: String,
-    data_type: DataType,
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct Schema {
-    fields: Vec<Field>,
-}}
-
-
-impl Schema {
-    pub fn to_sql(&self, dialect: SqlDialect, table_name: &str) -> String {
-        let columns: Vec<String> = self.fields.iter().map(|field| {
-            let sql_type = match (dialect, &field.data_type) {
-                (SqlDialect::PostgreSQL, DataType::Int64) => "BIGINT",
-                (SqlDialect::PostgreSQL, DataType::Float64) => "DOUBLE PRECISION",
-                (SqlDialect::PostgreSQL, DataType::Utf8) => "TEXT",
-                (SqlDialect::MySQL, DataType::Int64) => "BIGINT",
-                (SqlDialect::MySQL, DataType::Float64) => "DOUBLE",
-                (SqlDialect::MySQL, DataType::Utf8) => "TEXT",
-                (SqlDialect::SQLite, DataType::Int64) => "INTEGER",
-                (SqlDialect::SQLite, DataType::Float64) => "REAL",
-                (SqlDialect::SQLite, DataType::Utf8) => "TEXT",
-            };
-            format!("    {} {}", field.name, sql_type)
-        }).collect();
-
-        format!("CREATE TABLE {} (\n{}\n);", table_name, columns.join(",\n"))
-    }
-}
-
-// Function to parse the schema string
-pub fn parse_schema(schema_str: &str) -> Result<Schema, Box<dyn std::error::Error>> {
-    let schema_str = schema_str.replace("Schema", "").trim().to_string();
-    let schema: Schema = serde_json::from_str(&schema_str)?;
-    Ok(schema)
-}
-
 #[wasm_bindgen]
 pub struct VirtualFileSystem {
     files: HashMap<String, VirtualFile>,
