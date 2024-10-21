@@ -1,0 +1,579 @@
+city,cost_of_living_index,cost_of_living_plus_rent_index,country,groceries_index,local_purchasing_power_index,rent_index,restaurant_price_index,state
+hamilton,149.02,124.22,bermuda,157.89,79.43,96.1,155.22,n/a
+zurich,131.24,102.19,switzerland,136.14,129.79,69.26,132.52,n/a
+basel,130.93,92.7,switzerland,137.07,111.53,49.38,130.95,n/a
+zug,128.13,101.87,switzerland,132.61,143.4,72.12,130.93,n/a
+lugano,123.99,86.96,switzerland,129.17,111.96,44.99,119.8,n/a
+lausanne,122.03,92.74,switzerland,122.56,127.01,59.55,127.01,n/a
+beirut,120.47,77.01,lebanon,141.33,15.4,27.76,116.95,n/a
+bern,118.16,84.39,switzerland,118.37,112.46,46.12,120.88,n/a
+geneva,114.05,95.77,switzerland,112.7,120.6,75.05,126.31,n/a
+stavanger,104.61,72.16,norway,102.46,85.9,35.38,107.51,n/a
+honolulu,103.65,85.56,united states,114.92,89.24,65.07,94.28,hi
+oslo,102.33,76.11,norway,97.62,85.18,46.39,111.54,n/a
+bergen,100.38,69.66,norway,96.22,86.96,34.84,103.51,n/a
+new york,100.0,100.0,united states,100.0,100.0,100.0,100.0,ny
+trondheim,99.43,70.52,norway,95.11,88.0,37.74,103.21,n/a
+tromso,98.99,70.02,norway,97.73,89.46,37.19,103.47,n/a
+reykjavik,97.61,73.55,iceland,91.92,74.84,46.27,105.77,n/a
+saint helier,96.54,81.85,jersey,79.94,80.43,65.22,109.51,n/a
+santa barbara,95.01,87.23,united states,99.53,93.86,78.42,99.41,ca
+tel aviv-yafo,94.49,75.15,israel,82.98,70.22,53.22,106.66,n/a
+berkeley,94.36,91.48,united states,106.23,85.78,88.22,78.85,ca
+san francisco,93.91,100.72,united states,97.05,133.16,108.42,93.4,ca
+oakland,92.93,90.52,united states,98.46,111.73,87.79,78.71,ca
+anchorage,91.23,66.88,united states,97.95,118.63,39.29,78.76,ak
+santa clara,89.41,89.87,united states,100.63,155.41,90.39,73.46,ca
+petah tikva,88.86,62.52,israel,76.04,72.86,32.68,100.37,n/a
+beersheba,88.77,57.99,israel,81.06,80.11,23.1,92.07,n/a
+seattle,88.52,77.89,united states,87.34,145.39,65.84,93.09,wa
+copenhagen,88.34,70.1,denmark,71.49,90.67,49.42,106.02,n/a
+arhus,88.18,63.97,denmark,69.2,95.49,36.52,111.78,n/a
+haifa,87.44,57.86,israel,74.28,77.61,24.34,94.59,n/a
+jerusalem,86.32,64.78,israel,74.46,79.55,40.36,101.01,n/a
+nassau,85.98,62.72,bahamas,76.79,46.7,36.36,86.61,n/a
+london,85.62,81.35,united kingdom,64.08,88.79,76.51,89.41,n/a
+tokyo,85.61,65.5,japan,94.94,88.58,42.71,52.26,n/a
+boston,85.47,82.09,united states,85.4,115.72,78.26,90.86,ma
+nice,84.6,61.87,france,83.37,64.22,36.1,87.59,n/a
+paris,84.35,67.68,france,83.65,80.2,48.79,81.64,n/a
+queens,84.02,77.15,united states,79.19,105.72,69.36,83.16,ny
+singapore,83.98,75.75,singapore,77.08,91.34,66.43,61.17,n/a
+washington,83.74,78.93,united states,83.86,121.83,73.47,82.36,dc
+sydney,83.21,71.41,australia,79.65,104.52,58.03,73.06,n/a
+luxembourg,82.99,73.82,luxembourg,75.83,100.19,63.43,95.17,n/a
+espoo,82.46,60.66,finland,74.46,90.3,35.95,100.73,n/a
+aalborg,82.43,54.7,denmark,71.24,100.93,23.26,93.27,n/a
+pittsburgh,82.36,62.1,united states,89.37,115.5,39.14,68.36,pa
+darwin,82.06,60.02,australia,83.7,109.44,35.04,83.45,n/a
+amsterdam,80.82,69.09,netherlands,64.45,94.45,55.8,85.59,n/a
+jersey city,80.79,72.45,united states,81.67,155.89,63.0,73.28,nj
+hong kong,80.71,77.83,hong kong,84.72,65.74,74.57,58.58,n/a
+breda,80.64,58.0,netherlands,67.22,84.3,32.34,85.84,n/a
+nanaimo,80.26,58.6,canada,87.2,57.49,34.06,67.48,bc
+auckland,80.19,63.93,new zealand,75.19,79.21,45.49,79.09,n/a
+haarlem,79.79,67.14,netherlands,66.33,77.06,52.81,79.42,n/a
+utrecht,79.76,63.28,netherlands,65.53,77.9,44.61,85.88,n/a
+brighton,79.57,66.39,united kingdom,63.41,74.78,51.44,86.88,n/a
+brisbane,79.44,59.81,australia,79.33,103.8,37.56,74.5,n/a
+philadelphia,79.19,65.31,united states,81.67,115.61,49.57,71.07,pa
+los angeles,79.19,76.98,united states,75.94,126.12,74.48,91.73,ca
+minneapolis,79.08,64.07,united states,79.07,114.68,47.05,78.57,mn
+turku,79.06,53.07,finland,71.16,96.82,23.62,89.3,n/a
+dublin,79.05,71.24,ireland,63.64,81.82,62.39,83.31,n/a
+stockholm,78.92,62.54,sweden,70.58,95.42,43.96,82.0,n/a
+birmingham,78.82,55.09,united states,84.3,84.93,28.19,75.48,al
+seoul,78.66,57.66,south korea,98.28,74.5,33.87,47.26,n/a
+eindhoven,78.24,59.26,netherlands,64.14,86.92,37.74,78.09,n/a
+odense,78.23,54.85,denmark,63.2,94.79,28.34,90.81,n/a
+miami,78.0,71.88,united states,76.72,93.71,64.96,79.18,fl
+groningen,77.94,54.51,netherlands,65.77,78.31,27.96,77.83,n/a
+sacramento,77.88,65.07,united states,80.84,101.43,50.55,70.23,ca
+nijmegen,77.8,56.0,netherlands,65.82,86.52,31.3,79.62,n/a
+munich,77.52,63.37,germany,66.77,95.16,47.34,76.82,n/a
+galway,77.44,59.8,ireland,67.73,71.94,39.8,77.69,n/a
+st. john's,77.4,51.23,canada,77.91,62.75,21.57,77.37,newfoundland and labrador
+innsbruck,77.32,55.2,austria,66.32,68.01,30.14,79.87,n/a
+perth,77.29,56.57,australia,76.45,110.04,33.08,72.08,n/a
+charleston,77.26,63.83,united states,77.13,121.26,48.61,78.68,sc
+asheville,77.25,62.3,united states,85.59,94.16,45.36,71.12,nc
+lyon,77.21,55.76,france,76.04,82.65,31.45,71.34,n/a
+leiden,77.2,58.49,netherlands,66.23,77.18,37.29,76.16,n/a
+helsinki,77.17,58.96,finland,69.7,83.51,38.32,83.74,n/a
+chicago,77.06,67.77,united states,73.3,135.26,57.25,76.34,il
+fort lauderdale,76.86,67.35,united states,81.28,101.32,56.56,82.48,fl
+portland,76.83,65.62,united states,75.46,108.09,52.91,74.61,or
+melbourne,76.76,58.9,australia,77.78,102.16,38.65,74.68,n/a
+osaka,76.71,54.41,japan,82.24,81.58,29.13,44.42,n/a
+wellington,76.66,62.02,new zealand,75.75,85.49,45.43,69.08,n/a
+victoria,76.65,61.77,canada,80.26,89.12,44.9,79.11,n/a
+vancouver,76.61,67.17,canada,79.84,87.68,56.47,74.29,n/a
+atlanta,76.6,63.47,united states,78.0,130.67,48.58,70.94,ga
+adelaide,76.59,56.06,australia,78.09,104.24,32.79,67.72,n/a
+lund,76.58,54.01,sweden,72.64,104.91,28.43,72.53,n/a
+toulouse,76.57,52.27,france,75.31,90.06,24.74,79.45,n/a
+guelph,76.36,58.44,canada,77.93,79.64,38.13,82.35,n/a
+rotterdam,76.24,60.07,netherlands,64.83,91.36,41.74,76.3,n/a
+saint paul,76.17,61.07,united states,73.4,106.63,43.96,77.55,mn
+cork,76.15,60.44,ireland,62.63,84.45,42.64,82.01,n/a
+guildford,76.02,63.41,united kingdom,66.52,78.75,49.12,74.95,n/a
+plano,75.94,63.01,united states,77.11,105.41,48.36,61.45,tx
+canberra,75.94,60.26,australia,76.81,105.11,42.5,79.07,n/a
+tampa,75.83,62.02,united states,80.03,98.28,46.37,74.23,fl
+gold coast,75.8,58.99,australia,73.38,101.22,39.95,73.8,n/a
+oxford,75.68,63.25,united kingdom,65.9,104.03,49.17,75.45,n/a
+nagoya,75.62,67.18,japan,82.53,57.39,57.61,40.27,n/a
+lincoln,75.6,50.59,united kingdom,60.86,88.99,22.24,90.13,n/a
+york,75.52,56.1,united kingdom,62.37,73.46,34.08,80.71,n/a
+san diego,75.47,72.33,united states,73.82,127.94,68.77,78.67,ca
+cleveland,75.41,56.6,united states,76.36,125.32,35.29,79.48,oh
+omaha,75.31,54.17,united states,72.55,106.03,30.21,80.25,ne
+leuven,75.27,53.39,belgium,64.58,83.59,28.6,85.8,n/a
+reading,75.27,59.53,united kingdom,63.44,100.89,41.7,85.76,n/a
+hamilton,75.24,54.51,new zealand,74.45,123.18,31.02,72.93,n/a
+denver,75.16,65.88,united states,72.13,129.98,55.36,76.59,co
+uppsala,75.08,52.92,sweden,68.03,83.94,27.8,76.36,n/a
+newcastle,74.99,57.48,australia,74.17,118.92,37.63,79.49,n/a
+halifax,74.91,55.75,canada,82.91,87.92,34.04,65.22,n/a
+milan,74.8,60.65,italy,62.83,53.96,44.61,80.37,n/a
+sliema,74.78,54.51,malta,68.77,47.96,31.54,82.09,n/a
+graz,74.59,50.19,austria,70.69,79.03,22.54,62.68,n/a
+brussels,74.39,55.15,belgium,64.69,87.04,33.35,77.0,n/a
+buffalo,74.29,53.32,united states,72.4,124.36,29.56,73.62,ny
+toronto,74.29,63.74,canada,69.91,101.29,51.78,74.36,n/a
+colorado springs,74.26,58.91,united states,74.4,137.64,41.51,72.77,co
+fremont,74.12,74.5,united states,75.4,157.35,74.93,71.0,ca
+limerick,74.11,58.24,ireland,61.06,96.5,40.25,77.49,n/a
+salem,73.98,56.09,united states,78.63,89.2,35.81,63.1,or
+the hague (den haag),73.94,58.63,netherlands,64.74,88.51,41.27,76.42,n/a
+hobart,73.93,56.83,australia,71.28,101.63,37.44,73.19,n/a
+christchurch,73.85,54.51,new zealand,72.38,90.2,32.58,70.9,n/a
+malmo,73.75,51.68,sweden,67.5,84.86,26.67,79.03,n/a
+san jose,73.71,77.74,united states,70.53,157.39,82.3,74.25,ca
+nashville,73.62,64.19,united states,73.46,111.46,53.5,74.0,tn
+enschede,73.61,52.54,netherlands,66.31,93.83,28.67,76.96,n/a
+olympia,73.58,56.87,united states,77.67,108.83,37.93,81.13,wa
+maastricht,73.56,56.26,netherlands,65.97,86.5,36.64,72.83,n/a
+baltimore,73.56,58.61,united states,74.65,136.13,41.68,73.38,md
+new orleans,73.55,59.44,united states,69.49,92.88,43.45,76.72,la
+linz,73.55,51.49,austria,67.58,78.35,26.48,75.39,n/a
+calgary,73.4,54.97,canada,70.06,114.16,34.08,72.09,n/a
+edinburgh,73.15,56.38,united kingdom,59.68,88.03,37.38,84.71,n/a
+ottawa,73.15,57.54,canada,70.8,94.3,39.86,73.74,n/a
+milton keynes,73.14,56.5,united kingdom,60.6,73.92,37.65,73.63,n/a
+manchester,73.14,55.23,united kingdom,60.14,91.33,34.94,87.5,n/a
+mississauga,73.12,61.24,canada,67.93,99.7,47.77,65.27,n/a
+cambridge,73.05,60.44,united kingdom,60.4,92.85,46.16,83.11,n/a
+gothenburg,72.97,53.46,sweden,65.03,101.17,31.35,77.34,n/a
+edmonton,72.86,52.32,canada,68.2,109.54,29.03,73.73,n/a
+parma,72.81,48.85,italy,60.1,60.66,21.7,77.72,n/a
+genoa,72.79,47.91,italy,69.58,51.57,19.72,71.05,n/a
+frankfurt,72.78,57.02,germany,58.44,106.89,39.15,66.41,n/a
+fort collins,72.75,58.84,united states,83.18,100.34,43.09,56.71,co
+grenoble,72.67,48.64,france,72.16,81.58,21.4,66.83,n/a
+bergamo,72.64,49.5,italy,65.21,63.32,23.27,73.57,n/a
+derby,72.57,48.71,united kingdom,58.01,119.81,21.68,80.36,n/a
+iowa city,72.54,53.39,united states,78.24,85.03,31.69,62.48,ia
+delft,72.54,52.8,netherlands,65.99,91.65,30.43,63.12,n/a
+syracuse,72.53,53.2,united states,79.21,78.44,31.3,65.02,ny
+everett,72.38,59.62,united states,72.08,101.79,45.16,81.87,wa
+saskatoon,72.27,51.51,canada,68.37,88.18,27.99,69.98,n/a
+heidelberg,72.14,53.75,germany,52.74,102.21,32.91,77.41,n/a
+markham,72.1,59.74,canada,65.21,108.69,45.74,77.13,n/a
+hamburg,72.01,55.48,germany,57.23,101.1,36.75,68.12,n/a
+red deer,71.73,48.64,canada,70.32,123.94,22.46,65.19,n/a
+surrey,71.67,57.22,canada,71.55,98.13,40.84,72.28,n/a
+trieste,71.65,46.54,italy,64.55,63.01,18.08,73.07,n/a
+rochester,71.57,51.68,united states,71.98,100.12,29.13,69.13,ny
+milwaukee,71.56,56.65,united states,73.6,109.19,39.74,68.6,wi
+albany,71.49,54.24,united states,69.53,129.75,34.7,78.98,ny
+liverpool,71.39,50.19,united kingdom,56.4,90.09,26.18,86.7,n/a
+nottingham,71.34,50.43,united kingdom,65.7,91.62,26.73,70.68,n/a
+antwerp,71.33,49.99,belgium,61.55,90.25,25.8,76.0,n/a
+bristol,71.32,56.85,united kingdom,56.75,84.81,40.45,83.16,n/a
+tampere,71.19,49.71,finland,61.78,91.43,25.36,84.07,n/a
+portsmouth,71.16,52.11,united kingdom,62.31,85.02,30.52,78.14,n/a
+bonn,71.08,52.27,germany,53.92,95.72,30.96,73.85,n/a
+marseille,71.05,48.93,france,72.68,95.31,23.86,64.74,n/a
+rome,71.0,55.15,italy,62.72,51.33,37.19,70.26,n/a
+tauranga,70.87,49.86,new zealand,73.26,84.35,26.04,67.88,n/a
+florence,70.81,50.57,italy,65.22,53.36,27.63,73.13,n/a
+plymouth,70.7,49.1,united kingdom,58.0,84.01,24.61,73.68,n/a
+detroit,70.68,54.73,united states,68.34,110.05,36.65,67.09,mi
+reno,70.67,59.55,united states,71.66,96.91,46.95,71.09,nv
+oulu,70.62,47.19,finland,66.72,101.06,20.64,69.74,n/a
+montreal,70.6,52.13,canada,73.62,89.93,31.2,68.41,n/a
+salzburg,70.53,52.54,austria,66.99,77.81,32.15,68.46,n/a
+london,70.49,54.57,canada,64.74,100.36,36.54,79.2,n/a
+brampton,70.44,55.78,canada,69.11,103.49,39.17,60.26,n/a
+fort worth,70.42,56.35,united states,70.1,112.62,40.41,66.32,tx
+durham,70.37,57.11,united states,80.32,104.76,42.09,66.25,nc
+winnipeg,70.33,50.19,canada,70.13,101.59,27.37,62.04,n/a
+ann arbor,70.28,59.82,united states,74.16,159.99,47.97,63.62,mi
+greensboro,70.27,54.98,united states,72.21,92.73,37.64,70.22,nc
+san juan,70.14,52.4,puerto rico,74.76,66.7,32.29,58.11,n/a
+charlotte,70.06,61.32,united states,69.24,144.88,51.42,67.63,nc
+norwich,70.06,49.81,united kingdom,62.4,79.66,26.85,73.92,n/a
+gent,69.97,49.97,belgium,60.18,77.4,27.3,76.78,n/a
+exeter,69.9,52.11,united kingdom,54.86,93.92,31.96,74.18,n/a
+dortmund,69.89,47.04,germany,56.17,105.62,21.15,60.72,n/a
+long beach,69.87,63.9,united states,73.73,110.03,57.14,74.39,ca
+bologna,69.79,49.49,italy,61.83,58.89,26.48,74.24,n/a
+north vancouver,69.79,63.07,canada,70.45,110.05,55.44,70.77,n/a
+kelowna,69.73,56.58,canada,64.84,77.45,41.68,71.84,n/a
+columbus,69.7,54.38,united states,67.9,151.29,37.02,68.94,oh
+brescia,69.64,45.7,italy,63.15,69.1,18.56,69.04,n/a
+eugene,69.64,54.67,united states,78.13,88.21,37.71,67.36,or
+macao,69.61,56.23,macao,72.72,67.31,41.06,51.65,n/a
+cologne,69.59,51.51,germany,56.46,89.1,31.03,64.7,n/a
+jacksonville,69.51,53.51,united states,74.58,144.3,35.37,70.42,fl
+regina,69.44,49.4,canada,70.31,104.02,26.68,66.08,n/a
+phoenix,69.37,57.4,united states,66.78,135.94,43.85,71.42,az
+des moines,69.33,50.91,united states,72.4,108.35,30.03,65.94,ia
+quebec city,68.99,46.71,canada,69.42,87.22,21.46,65.08,n/a
+fresno,68.97,52.59,united states,64.72,116.4,34.02,72.91,ca
+berlin,68.94,54.71,germany,56.41,105.86,38.59,61.05,n/a
+cardiff,68.91,50.51,united kingdom,56.87,106.17,29.64,76.53,n/a
+windsor,68.88,51.19,canada,64.56,58.02,31.13,71.92,n/a
+glasgow,68.76,50.04,united kingdom,55.63,96.42,28.82,77.95,n/a
+kitchener,68.7,53.29,canada,67.31,73.85,35.83,70.72,n/a
+vancouver,68.57,56.8,united states,64.68,126.09,43.47,69.82,wa
+kingston,68.57,51.9,canada,68.42,75.42,33.0,65.4,n/a
+augsburg,68.51,48.53,germany,55.01,79.93,25.89,66.96,n/a
+stuttgart,68.38,52.86,germany,55.5,109.02,35.27,71.32,n/a
+vienna,68.36,52.56,austria,61.71,79.56,34.66,66.93,n/a
+mannheim,68.35,46.98,germany,51.32,95.07,22.77,65.4,n/a
+las vegas,68.34,54.22,united states,61.14,124.83,38.21,73.39,nv
+boise,68.29,56.57,united states,60.93,82.63,43.29,81.52,id
+dusseldorf,68.28,51.48,germany,52.64,109.99,32.44,68.8,n/a
+raleigh,68.2,55.63,united states,70.36,144.12,41.39,69.44,nc
+pisa,68.17,46.7,italy,66.1,52.1,22.37,66.85,n/a
+spokane,68.11,52.63,united states,64.88,112.36,35.09,70.34,wa
+orlando,68.1,57.68,united states,66.7,123.32,45.87,69.78,fl
+dayton,68.03,49.23,united states,66.09,79.21,27.92,59.01,oh
+verona,67.98,46.11,italy,62.32,63.11,21.34,68.68,n/a
+dallas,67.85,59.56,united states,63.61,170.66,50.17,71.74,tx
+richmond,67.75,53.58,united states,65.07,130.94,37.52,77.5,va
+louisville,67.71,51.09,united states,70.16,109.65,32.24,69.26,ky
+southampton,67.59,51.09,united kingdom,55.69,98.44,32.4,69.59,n/a
+leeds,67.57,50.18,united kingdom,56.17,88.49,30.47,75.71,n/a
+treviso,67.54,45.74,italy,60.07,61.95,21.03,72.34,n/a
+madison,67.32,53.93,united states,66.91,132.13,38.75,72.34,wi
+birmingham,67.25,51.24,united kingdom,55.36,81.78,33.1,68.91,n/a
+indianapolis,67.14,52.6,united states,67.62,121.53,36.12,67.64,in
+hanover,67.04,48.29,germany,55.62,95.57,27.03,60.74,n/a
+nuremberg,66.97,47.49,germany,55.63,115.65,25.4,60.21,n/a
+hamilton,66.95,52.43,canada,67.04,86.35,35.98,66.75,n/a
+coventry,66.94,49.11,united kingdom,58.06,108.7,28.91,63.75,n/a
+newcastle upon tyne,66.86,47.57,united kingdom,56.08,97.66,25.72,71.13,n/a
+saint louis,66.83,50.78,united states,67.03,123.2,32.58,66.47,mo
+ulm,66.67,48.89,germany,50.43,107.39,28.74,68.61,n/a
+stoke-on-trent,66.58,43.58,united kingdom,52.76,97.94,17.51,73.8,n/a
+austin,66.5,62.36,united states,67.33,158.21,57.68,73.74,tx
+dundee,66.46,46.22,united kingdom,56.19,82.43,23.27,73.5,n/a
+saarbrucken,66.3,45.73,germany,50.44,85.4,22.43,73.24,n/a
+kansas city,66.07,50.8,united states,60.66,127.2,33.5,75.16,mo
+cagliari,66.06,43.77,italy,58.2,57.68,18.51,67.44,n/a
+karlsruhe,65.88,48.03,germany,51.61,103.03,27.8,66.17,n/a
+sheffield,65.88,47.62,united kingdom,57.43,89.07,26.92,63.83,n/a
+taipei,65.8,46.5,taiwan,80.24,59.33,24.64,34.24,n/a
+belfast,65.74,47.17,united kingdom,57.73,91.62,26.12,74.02,n/a
+chattanooga,65.69,52.36,united states,69.0,91.7,37.25,60.43,tn
+darmstadt,65.48,47.78,germany,52.99,108.54,27.73,60.54,n/a
+limassol,65.26,48.66,cyprus,53.36,55.84,29.86,72.33,n/a
+turin,65.19,44.95,italy,59.26,67.23,22.02,64.02,n/a
+st.catharines,65.18,49.94,canada,63.59,71.18,32.67,56.27,n/a
+best,65.13,47.78,netherlands,59.33,97.21,28.11,66.34,n/a
+toledo,64.99,45.26,united states,64.78,90.45,22.91,63.45,oh
+salt lake city,64.95,54.35,united states,61.4,140.61,42.34,65.68,ut
+oklahoma city,64.94,49.42,united states,69.97,127.95,31.83,57.78,ok
+padova,64.93,44.82,italy,52.16,66.62,22.03,69.96,n/a
+leicester,64.91,46.17,united kingdom,52.47,92.59,24.93,72.19,n/a
+freiburg im breisgau,64.65,50.98,germany,50.02,94.46,35.49,62.73,n/a
+erlangen,64.54,45.93,germany,49.25,131.75,24.83,67.89,n/a
+nicosia,64.53,43.35,cyprus,52.57,60.28,19.34,65.96,n/a
+cincinnati,64.39,52.83,united states,64.25,125.17,39.74,63.76,oh
+tucson,64.34,47.15,united states,61.91,83.69,27.66,65.88,az
+dubai,64.32,54.83,united arab emirates,48.24,101.11,44.08,70.7,n/a
+houston,63.94,54.3,united states,61.26,172.98,43.38,67.45,tx
+bilbao,63.81,46.5,spain,57.84,65.48,26.88,61.97,n/a
+bournemouth,63.73,49.21,united kingdom,48.72,76.52,32.77,68.9,n/a
+mesa,63.66,49.28,united states,63.2,103.42,32.99,72.07,az
+essen,63.61,43.63,germany,47.32,81.89,20.98,65.81,n/a
+albuquerque,63.44,49.6,united states,64.6,122.44,33.91,64.07,nm
+aberdeen,63.4,44.49,united kingdom,47.87,102.02,23.06,77.47,n/a
+lexington,62.92,47.15,united states,69.21,102.4,29.27,55.65,ky
+doha,62.9,56.48,qatar,55.14,89.93,49.19,63.0,n/a
+leipzig,62.83,44.3,germany,47.91,79.8,23.29,55.86,n/a
+san antonio,62.59,51.19,united states,57.25,137.67,38.27,69.45,tx
+bari,62.59,41.75,italy,53.28,64.98,18.14,65.58,n/a
+dresden,62.46,43.12,germany,47.74,109.14,21.21,58.64,n/a
+tulsa,62.35,46.68,united states,58.89,132.05,28.92,60.48,ok
+naples,62.35,43.14,italy,53.19,56.2,21.37,59.26,n/a
+memphis,62.29,49.45,united states,58.08,109.95,34.91,69.54,tn
+bremen,62.24,44.23,germany,48.69,77.06,23.82,61.63,n/a
+akron,62.2,43.78,united states,63.55,102.89,22.9,55.56,oh
+kingston upon hull,62.07,43.19,united kingdom,52.73,86.57,21.79,63.89,n/a
+aachen,61.81,43.03,germany,49.49,116.48,21.74,57.99,n/a
+kaohsiung,61.4,40.08,taiwan,75.57,55.49,15.91,28.88,n/a
+regensburg,61.36,45.51,germany,47.29,103.28,27.54,61.66,n/a
+barcelona,61.15,46.83,spain,49.39,70.83,30.6,61.89,n/a
+little rock,59.26,43.48,united states,57.28,131.07,25.6,64.63,ar
+port of spain,59.2,40.46,trinidad and tobago,51.98,40.68,19.23,73.56,n/a
+madrid,59.01,46.32,spain,49.14,74.83,31.95,62.31,n/a
+palma de mallorca,58.97,44.88,spain,48.41,63.24,28.92,61.53,n/a
+athens,58.97,39.73,greece,46.99,40.03,17.92,60.78,n/a
+wichita,58.92,42.67,united states,53.08,119.24,24.26,57.42,ks
+patras,58.74,35.98,greece,43.05,37.37,10.18,43.7,n/a
+thessaloniki,58.4,37.4,greece,43.85,37.91,13.6,55.28,n/a
+palermo,57.97,37.7,italy,49.5,58.89,14.72,52.07,n/a
+abu dhabi,57.89,73.79,united arab emirates,49.79,75.22,91.8,58.49,n/a
+larnaca,57.38,39.74,cyprus,47.83,55.32,19.76,55.84,n/a
+catania,57.35,38.68,italy,44.63,54.62,17.53,61.39,n/a
+male,57.26,44.42,maldives,56.24,28.52,29.87,33.01,n/a
+ljubljana,57.18,41.4,slovenia,49.44,60.19,23.5,52.01,n/a
+heraklion,57.08,37.47,greece,47.25,36.04,15.25,44.72,n/a
+el paso,55.92,40.56,united states,54.45,118.77,23.17,48.18,tx
+havana,55.91,37.77,cuba,45.92,1.62,17.2,40.14,n/a
+tallinn,55.75,38.63,estonia,42.71,64.89,19.24,58.55,n/a
+zaragoza (saragossa),54.8,37.56,spain,48.83,69.32,18.03,54.8,n/a
+panama city,54.54,41.27,panama,55.82,32.31,26.23,47.98,n/a
+manama,54.3,42.06,bahrain,42.9,62.59,28.18,50.3,n/a
+shanghai,53.9,49.48,china,57.06,53.0,44.47,42.55,n/a
+riyadh,53.85,36.24,saudi arabia,43.62,92.73,16.29,43.19,n/a
+tartu,53.79,35.68,estonia,45.81,60.53,15.16,54.85,n/a
+vigo,53.43,36.55,spain,43.92,74.98,17.42,55.09,n/a
+seville (sevilla),53.28,38.13,spain,49.6,71.04,20.95,47.29,n/a
+valencia,52.97,38.67,spain,45.34,70.04,22.45,55.18,n/a
+paphos,52.86,35.74,cyprus,43.42,61.21,16.35,52.53,n/a
+makati,52.72,41.41,philippines,57.92,20.57,28.6,29.33,n/a
+ajman,52.58,41.02,united arab emirates,38.45,48.26,27.92,59.57,n/a
+jeddah (jiddah),52.57,33.13,saudi arabia,43.47,76.08,11.1,36.65,n/a
+malaga,52.52,40.14,spain,44.09,65.84,26.1,51.62,n/a
+amman,52.18,32.7,jordan,41.65,29.51,10.63,48.02,n/a
+granada,52.03,35.16,spain,44.53,81.61,16.04,46.02,n/a
+montevideo,52.0,34.71,uruguay,43.85,30.79,15.11,47.54,n/a
+prague,51.78,39.7,czech republic,45.19,71.96,26.02,42.51,n/a
+murcia,51.73,35.01,spain,44.19,78.54,16.05,51.54,n/a
+lisbon,51.7,42.18,portugal,40.29,48.26,31.39,50.65,n/a
+maribor,51.64,34.14,slovenia,44.32,68.02,14.31,43.38,n/a
+split,51.59,34.78,croatia,44.75,42.48,15.72,46.61,n/a
+kingston,51.57,36.04,jamaica,53.78,26.11,18.43,38.03,n/a
+riga,51.54,34.29,latvia,38.97,52.82,14.75,50.95,n/a
+alicante,51.47,36.65,spain,43.08,79.93,19.85,52.15,n/a
+muscat,51.24,35.91,oman,47.14,86.53,18.54,48.5,n/a
+shenzhen,51.08,40.29,china,57.71,68.96,28.06,34.42,n/a
+santa cruz de tenerife,50.92,36.25,spain,43.04,63.82,19.62,52.25,n/a
+dakar,50.87,37.96,senegal,42.88,23.14,23.33,46.64,n/a
+cascais,50.86,45.03,portugal,38.25,41.22,38.41,55.25,n/a
+las palmas de gran canaria,50.52,37.81,spain,45.62,56.7,23.41,47.89,n/a
+addis ababa,50.49,35.0,ethiopia,36.77,9.83,17.44,21.45,n/a
+bangkok,50.36,39.15,thailand,50.2,29.77,26.45,25.83,n/a
+rijeka,50.14,32.38,croatia,44.3,43.59,12.26,46.92,n/a
+phnom penh,50.1,35.44,cambodia,54.48,14.8,18.84,23.19,n/a
+zagreb,49.88,34.51,croatia,42.03,55.08,17.1,40.36,n/a
+beijing,49.53,44.67,china,47.4,53.08,39.16,39.45,n/a
+bratislava,49.44,37.06,slovakia,41.99,62.63,23.04,44.73,n/a
+porto,49.37,37.3,portugal,40.25,44.87,23.62,42.42,n/a
+brno,49.29,36.02,czech republic,42.93,65.14,20.98,39.2,n/a
+hangzhou,49.21,35.73,china,58.0,64.95,20.44,33.46,n/a
+paramaribo,49.19,30.87,suriname,48.25,16.38,10.1,61.28,n/a
+funchal,49.16,35.78,portugal,38.93,46.47,20.61,40.06,n/a
+sharjah,49.03,51.36,united arab emirates,41.01,56.71,54.01,36.79,n/a
+ad dammam,48.45,31.67,saudi arabia,42.97,93.58,12.66,34.27,n/a
+olomouc,48.21,32.63,czech republic,44.03,61.3,14.98,33.18,n/a
+kosice,48.19,33.75,slovakia,39.27,51.15,17.39,44.47,n/a
+kuwait city,48.0,40.13,kuwait,35.81,68.84,31.21,47.2,n/a
+san jose,47.65,33.51,costa rica,46.14,42.86,17.47,43.16,n/a
+coimbra,47.35,32.43,portugal,39.88,53.04,15.51,38.17,n/a
+abidjan,47.06,34.25,ivory coast,40.32,6.27,19.73,32.22,n/a
+braga,46.99,33.92,portugal,39.26,46.28,19.1,39.03,n/a
+vilnius,46.94,33.95,lithuania,36.84,62.14,19.22,48.79,n/a
+ostrava,46.47,31.04,czech republic,41.28,65.17,13.56,33.71,n/a
+aveiro,46.46,33.11,portugal,39.33,43.88,17.99,37.07,n/a
+budapest,46.13,32.01,hungary,39.18,52.66,16.01,41.98,n/a
+suzhou,45.94,32.28,china,51.0,58.75,16.81,38.07,n/a
+harare,45.69,28.75,zimbabwe,37.05,17.59,9.56,39.05,n/a
+leiria,45.67,31.51,portugal,36.37,49.68,15.46,45.81,n/a
+santiago,45.64,31.42,chile,40.12,32.08,15.3,47.92,n/a
+san salvador,45.32,30.65,el salvador,44.47,21.83,14.02,37.11,n/a
+caracas,45.31,29.73,venezuela,37.6,15.87,12.08,48.6,n/a
+johannesburg,44.87,31.28,south africa,35.54,72.15,15.89,41.17,n/a
+kaunas,44.74,29.97,lithuania,36.18,64.93,13.22,45.77,n/a
+santo domingo,44.66,28.74,dominican republic,41.48,22.21,10.69,35.56,n/a
+guatemala city,44.59,31.23,guatemala,42.19,24.37,16.09,33.71,n/a
+phuket,44.34,31.24,thailand,46.43,27.28,16.39,28.95,n/a
+warsaw,43.94,32.98,poland,33.93,66.04,20.55,42.14,n/a
+chengdu,43.81,29.31,china,50.73,56.04,12.87,27.4,n/a
+osijek,43.61,27.68,croatia,37.23,56.42,9.63,35.41,n/a
+quezon city,43.26,28.14,philippines,43.83,19.69,11.0,22.8,n/a
+gdynia,42.92,29.98,poland,34.59,50.58,15.33,38.35,n/a
+bali,42.87,30.42,indonesia,46.21,14.1,16.31,23.86,n/a
+pretoria,42.76,29.38,south africa,35.05,87.26,14.21,36.46,n/a
+gaborone,42.7,28.22,botswana,35.71,51.4,11.81,52.25,n/a
+nanjing,42.29,29.93,china,43.25,72.85,15.91,28.47,n/a
+sofia,42.24,29.27,bulgaria,36.68,55.31,14.58,38.75,n/a
+chiang mai,42.22,28.37,thailand,46.46,29.88,12.69,21.6,n/a
+moscow,42.2,35.56,russia,33.38,49.56,28.04,44.85,n/a
+pattaya,42.13,28.93,thailand,42.79,23.25,13.98,26.5,n/a
+gdansk,41.32,30.37,poland,35.0,64.36,17.95,35.02,n/a
+krakow (cracow),41.3,30.26,poland,33.13,67.1,17.76,37.8,n/a
+wroclaw,41.12,30.06,poland,33.9,59.89,17.52,35.12,n/a
+guangzhou,41.11,31.88,china,43.52,70.13,21.43,27.08,n/a
+cape town,40.98,32.38,south africa,34.81,75.83,22.64,41.41,n/a
+jakarta,40.86,29.42,indonesia,41.78,25.32,16.46,23.44,n/a
+pecs,40.83,27.39,hungary,37.71,47.23,12.15,33.36,n/a
+manila,40.77,33.46,philippines,39.85,22.24,25.18,25.18,n/a
+poznan,40.72,28.63,poland,33.89,58.32,14.92,35.71,n/a
+quito,40.48,27.42,ecuador,38.0,29.69,12.62,31.34,n/a
+durban,40.33,28.31,south africa,33.58,73.88,14.69,37.72,n/a
+katowice,40.26,28.02,poland,34.41,64.03,14.14,33.37,n/a
+cluj-napoca,40.16,28.25,romania,35.43,53.12,14.75,36.57,n/a
+bucharest,40.1,28.26,romania,33.5,53.15,14.84,39.45,n/a
+szeged,40.08,26.09,hungary,35.43,49.5,10.23,32.33,n/a
+belgrade,40.05,27.78,serbia,30.1,36.05,13.88,34.51,n/a
+debrecen,40.03,26.33,hungary,37.04,49.86,10.81,30.39,n/a
+petaling jaya,39.98,27.75,malaysia,44.89,60.88,13.89,22.83,n/a
+marrakech,39.94,26.97,morocco,32.34,29.96,12.28,33.7,n/a
+podgorica,39.34,26.31,montenegro,32.87,35.98,11.54,30.69,n/a
+szczecin,39.31,28.1,poland,33.75,51.05,15.38,32.29,n/a
+kota kinabalu,39.25,25.48,malaysia,47.29,39.43,9.87,20.16,n/a
+kuala lumpur,39.25,27.47,malaysia,41.08,64.04,14.13,24.67,n/a
+varna,39.14,24.7,bulgaria,34.27,46.29,8.32,36.27,n/a
+suva,39.04,29.55,fiji,39.43,44.68,18.8,35.29,n/a
+cebu,39.04,26.9,philippines,44.17,17.64,13.14,21.33,n/a
+ho chi minh city,39.01,29.09,vietnam,39.91,30.87,17.85,21.57,n/a
+cancun,38.85,27.83,mexico,35.22,38.24,15.34,41.42,n/a
+accra,38.74,29.97,ghana,41.01,21.12,20.04,32.77,n/a
+tirana,38.68,25.86,albania,30.99,31.15,11.33,29.86,n/a
+guayaquil,38.57,25.95,ecuador,34.01,31.41,11.65,29.39,n/a
+monterrey,38.46,27.62,mexico,37.47,42.98,15.34,36.54,n/a
+plovdiv,38.42,24.84,bulgaria,34.5,45.56,9.44,31.14,n/a
+sarajevo,38.42,24.76,bosnia and herzegovina,32.34,43.73,9.27,27.81,n/a
+lublin,38.04,26.72,poland,30.29,60.2,13.89,31.12,n/a
+erbil (irbil),38.03,26.09,iraq,32.56,39.88,12.56,32.77,n/a
+santa cruz,38.01,25.63,bolivia,33.02,32.91,11.6,30.64,n/a
+isfahan (esfahan),37.98,28.25,iran,24.37,22.77,17.23,18.47,n/a
+lodz,37.94,26.69,poland,31.45,57.76,13.94,30.2,n/a
+saint petersburg,37.81,28.12,russia,32.33,40.77,17.14,36.46,n/a
+banja luka,37.61,23.69,bosnia and herzegovina,32.6,38.29,7.92,27.12,n/a
+penang,37.61,24.34,malaysia,39.6,65.85,9.31,21.49,n/a
+la paz,37.53,25.03,bolivia,33.15,34.57,10.87,27.83,n/a
+sao paulo,37.51,26.72,brazil,32.13,29.23,14.49,31.55,n/a
+novi sad,37.44,24.73,serbia,29.45,42.73,10.32,29.78,n/a
+mexico city,37.41,29.68,mexico,35.45,36.74,20.93,37.82,n/a
+lagos,37.33,48.84,nigeria,39.28,8.3,61.89,29.59,n/a
+constanta,37.26,25.06,romania,30.69,45.4,11.24,37.25,n/a
+iasi,37.13,24.9,romania,31.26,44.06,11.03,33.64,n/a
+hanoi,36.85,25.3,vietnam,38.66,30.67,12.21,19.21,n/a
+tangier,36.85,24.38,morocco,34.34,33.16,10.25,26.53,n/a
+brasilia,36.84,24.77,brazil,29.88,43.54,11.08,31.75,n/a
+burgas,36.82,23.35,bulgaria,32.3,42.39,8.09,34.44,n/a
+baguio,36.74,23.95,philippines,31.62,18.71,9.45,17.87,n/a
+rio de janeiro,36.67,24.88,brazil,31.46,18.93,11.51,29.14,n/a
+brasov,36.63,25.17,romania,33.97,44.65,12.18,30.98,n/a
+casablanca,36.59,25.76,morocco,31.7,34.07,13.49,26.04,n/a
+damascus,36.38,23.53,syria,37.61,5.03,8.96,28.65,n/a
+sibiu,36.19,23.71,romania,32.76,48.27,9.57,33.8,n/a
+timisoara,36.16,24.47,romania,32.16,54.26,11.23,32.52,n/a
+kampala,35.98,24.5,uganda,32.5,9.83,11.5,26.61,n/a
+nairobi,35.88,25.42,kenya,32.25,29.23,13.57,30.62,n/a
+merida,35.7,24.4,mexico,35.71,33.5,11.58,36.46,n/a
+rabat,35.67,25.68,morocco,31.64,34.67,14.37,29.41,n/a
+qingdao,35.48,24.95,china,38.36,74.04,13.02,24.27,shandong
+queretaro,35.4,24.11,mexico,37.11,51.02,11.31,30.27,n/a
+bandung,35.39,22.18,indonesia,37.61,21.84,7.21,15.98,n/a
+oradea,35.35,22.49,romania,32.09,49.45,7.91,28.48,n/a
+buenos aires,35.25,23.75,argentina,28.54,26.89,10.73,34.35,n/a
+dhaka,35.12,21.57,bangladesh,31.49,23.81,6.21,24.41,n/a
+skopje,34.9,22.32,north macedonia,28.77,37.02,8.07,25.67,n/a
+ulaanbaatar,34.86,23.73,mongolia,36.15,25.02,11.11,23.35,n/a
+craiova,34.85,22.54,romania,31.58,52.91,8.59,27.98,n/a
+agadir,34.81,21.84,morocco,30.66,31.37,7.13,33.57,n/a
+baghdad,34.81,24.28,iraq,30.46,39.03,12.34,26.09,n/a
+surabaya,34.65,23.24,indonesia,37.39,23.63,10.31,17.58,n/a
+lima,34.6,25.18,peru,33.18,28.89,14.52,25.45,n/a
+arad,34.49,21.27,romania,32.69,50.96,6.28,24.98,n/a
+florianopolis,34.39,22.81,brazil,27.66,29.31,9.68,30.26,n/a
+cuenca,34.21,23.82,ecuador,32.87,30.84,12.05,23.99,n/a
+kiev (kyiv),34.11,26.58,ukraine,28.93,48.16,18.04,30.73,n/a
+gurgaon,34.1,22.71,india,34.07,74.9,9.8,31.55,n/a
+guadalajara,34.05,25.96,mexico,34.1,35.99,16.78,31.66,n/a
+kazan,34.02,24.12,russia,29.65,33.45,12.9,32.69,n/a
+yerevan,34.01,23.64,armenia,27.81,29.73,11.89,31.01,n/a
+dar es salaam,33.97,25.82,tanzania,31.15,13.54,16.59,22.16,n/a
+nizhny novgorod,33.89,22.65,russia,27.35,34.95,9.92,35.03,n/a
+colombo,33.62,24.36,sri lanka,39.57,18.58,13.86,19.92,n/a
+lusaka,33.57,22.6,zambia,32.85,37.48,10.18,23.63,n/a
+nis,33.4,21.15,serbia,26.46,40.38,7.26,24.98,n/a
+yekaterinburg,33.23,22.77,russia,29.47,57.77,10.91,27.76,n/a
+minsk,32.79,23.08,belarus,28.51,31.15,12.07,33.48,n/a
+krasnodar,32.65,21.94,russia,28.05,36.59,9.79,33.82,n/a
+mashhad,32.54,26.05,iran,26.44,22.68,18.69,25.95,n/a
+belo horizonte,32.5,20.97,brazil,25.09,20.99,7.89,21.89,n/a
+cairo,32.39,20.68,egypt,28.71,24.38,7.41,28.52,n/a
+porto alegre,32.33,21.34,brazil,30.16,31.24,8.88,24.97,n/a
+kigali,32.27,24.66,rwanda,27.99,26.37,16.04,29.84,n/a
+novosibirsk,32.26,21.81,russia,28.73,38.35,9.98,31.27,n/a
+rostov-na-donu,32.1,21.13,russia,26.56,36.94,8.69,30.09,n/a
+odessa (odesa),31.94,22.01,ukraine,26.48,32.72,10.74,30.19,n/a
+chisinau,31.82,21.78,moldova,25.52,34.38,10.41,26.56,n/a
+curitiba,31.81,20.47,brazil,27.2,32.28,7.62,25.31,n/a
+baku,31.6,21.23,azerbaijan,27.73,28.03,9.46,29.83,n/a
+tehran,31.47,27.41,iran,21.75,14.55,22.8,25.88,n/a
+istanbul,31.14,21.22,turkey,23.77,28.73,9.97,21.01,n/a
+tbilisi,30.95,21.25,georgia,26.67,29.47,10.25,29.06,n/a
+yogyakarta,30.8,20.94,indonesia,36.08,12.16,9.77,13.91,n/a
+asuncion,30.62,21.1,paraguay,25.52,27.38,10.31,24.9,n/a
+kharkiv,30.46,21.62,ukraine,26.14,33.98,11.6,24.61,n/a
+astana (nur-sultan),30.3,20.81,kazakhstan,25.99,41.0,10.05,30.31,n/a
+chandigarh,30.27,19.02,india,31.11,46.47,6.26,24.36,n/a
+almaty,30.22,21.65,kazakhstan,26.98,33.55,11.95,28.64,n/a
+tunis,29.94,18.93,tunisia,28.83,24.2,6.45,17.08,n/a
+kathmandu,29.87,18.11,nepal,28.05,23.16,4.78,22.61,n/a
+algiers,29.84,18.98,algeria,30.25,21.78,6.67,20.79,n/a
+lviv,29.67,20.7,ukraine,26.62,38.3,10.53,24.35,n/a
+tashkent,29.36,20.59,uzbekistan,28.76,22.63,10.66,27.02,n/a
+mumbai,29.33,24.82,india,29.73,48.03,19.72,25.17,n/a
+dnipro,29.26,20.46,ukraine,24.57,32.74,10.49,23.66,n/a
+noida,29.21,18.5,india,29.25,62.57,6.37,24.46,n/a
+medellin,28.81,19.74,colombia,25.65,32.78,9.47,22.53,n/a
+alexandria,28.43,18.22,egypt,27.33,20.28,6.64,22.78,n/a
+barranquilla,28.42,18.74,colombia,25.66,27.03,7.77,18.16,n/a
+navi mumbai,28.38,20.19,india,31.59,78.67,10.9,23.14,n/a
+izmir,28.37,18.06,turkey,23.44,35.18,6.39,18.66,n/a
+delhi,28.23,18.96,india,27.75,60.44,8.46,24.45,n/a
+bangalore,28.2,19.01,india,31.14,102.64,8.59,20.04,n/a
+bogota,27.94,20.29,colombia,24.33,26.1,11.61,21.98,n/a
+goa,27.72,18.7,india,28.44,36.29,8.47,24.88,n/a
+pune,27.57,17.98,india,28.86,53.68,7.12,22.75,n/a
+ghaziabad,27.55,17.1,india,28.37,54.56,5.26,19.88,n/a
+thane,27.53,18.5,india,30.55,66.14,8.26,23.84,n/a
+ranchi,27.33,16.48,india,30.58,38.61,4.18,21.19,n/a
+ankara,27.17,17.39,turkey,21.43,39.07,6.31,17.97,n/a
+hyderabad,26.61,17.17,india,29.69,51.21,6.47,18.17,n/a
+faridabad,26.56,16.64,india,27.34,51.07,5.4,20.03,n/a
+bishkek,26.55,18.02,kyrgyzstan,24.76,23.06,8.34,22.54,n/a
+pristina,26.15,18.13,kosovo (disputed territory),22.99,47.48,9.04,19.69,n/a
+chennai,26.08,17.02,india,28.88,46.31,6.76,16.98,n/a
+ahmedabad,26.01,16.59,india,28.52,39.11,5.93,19.15,n/a
+kolkata,25.99,16.42,india,28.24,44.66,5.57,18.89,n/a
+cali,25.78,16.98,colombia,22.61,31.08,7.0,17.95,n/a
+guwahati,25.61,15.59,india,28.59,39.6,4.24,18.37,n/a
+lucknow (lakhnau),25.42,15.84,india,25.72,48.19,4.99,20.36,n/a
+madurai,25.38,15.26,india,31.29,32.82,3.79,12.3,n/a
+surat,25.34,16.8,india,27.62,41.98,7.12,20.18,n/a
+vadodara,25.32,15.55,india,27.55,46.1,4.48,19.49,n/a
+vijayawada,24.95,15.75,india,26.24,37.17,5.32,16.86,n/a
+ludhiana,24.92,14.97,india,27.36,35.75,3.7,18.34,n/a
+cyberjaya,24.85,16.45,malaysia,26.29,128.47,6.93,14.6,selangor
+raipur,24.81,15.26,india,27.7,63.17,4.44,16.98,n/a
+dehradun,24.75,15.51,india,23.54,40.36,5.03,19.88,n/a
+nashik,24.6,15.29,india,27.92,35.31,4.74,14.48,n/a
+indore,24.5,15.17,india,26.47,40.0,4.59,16.27,n/a
+rajkot,24.47,15.09,india,28.31,44.8,4.46,16.27,n/a
+nagpur,24.39,15.04,india,26.47,42.48,4.45,18.85,n/a
+ernakulam,24.04,15.5,india,26.53,46.52,5.82,18.27,n/a
+visakhapatnam,24.03,15.3,india,28.27,42.7,5.4,14.52,n/a
+jaipur,23.97,15.1,india,24.58,51.5,5.04,16.53,n/a
+patna,23.97,14.35,india,25.81,36.78,3.45,18.25,n/a
+mangalore,23.73,14.75,india,27.17,47.91,4.58,14.87,n/a
+bucaramanga,23.7,15.37,colombia,18.09,30.42,5.93,16.7,n/a
+coimbatore,23.45,14.73,india,26.68,40.73,4.85,15.04,n/a
+bhopal,23.35,14.08,india,24.45,45.78,3.58,18.7,n/a
+bhubaneswar,23.34,14.49,india,25.97,54.15,4.47,14.58,n/a
+mysore,23.16,14.61,india,25.82,46.46,4.92,14.32,n/a
+kochi,22.9,15.12,india,25.89,59.47,6.3,13.48,n/a
+agra,22.81,13.51,india,22.62,27.91,2.97,19.38,n/a
+jammu,22.04,13.08,india,21.79,58.35,2.94,19.31,n/a
+thiruvananthapuram,21.75,13.64,india,22.96,73.73,4.43,13.59,n/a
+kozhikode (calicut),21.57,13.57,india,22.83,50.02,4.5,12.07,n/a
+lahore,21.53,13.33,pakistan,18.48,24.42,4.03,17.34,n/a
+islamabad,21.5,14.13,pakistan,18.39,29.52,5.79,18.19,n/a
+kabul,21.35,12.83,afghanistan,15.22,22.79,3.17,14.85,n/a
+thrissur,21.28,13.13,india,24.27,54.43,3.89,11.39,n/a
+kanpur,20.79,12.73,india,22.19,38.83,3.6,13.31,n/a
+karachi,20.75,13.29,pakistan,18.48,29.16,4.84,15.21,n/a
+rawalpindi,20.52,13.14,pakistan,18.51,22.91,4.78,16.18,n/a
+multan,18.68,11.3,pakistan,18.37,25.09,2.94,11.8,n/a
+peshawar,18.55,10.97,pakistan,16.62,26.0,2.37,14.39,n/a
