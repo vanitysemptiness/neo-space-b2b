@@ -1,5 +1,14 @@
 use wasm_bindgen::prelude::*;
 
+/// what do users want to know
+/// row count
+/// column count
+/// memory footprint
+/// missing values or zero values
+/// date ranges -> will have to support later
+/// file creation, modification date
+/// 
+
 #[wasm_bindgen]
 pub fn get_csv_schema(csv_content: &str) -> Result<String, JsValue> {
     let mut lines = csv_content.lines();
@@ -33,7 +42,7 @@ pub fn get_csv_schema(csv_content: &str) -> Result<String, JsValue> {
 }
 
 #[cfg(test)]
-mod tests {
+mod file_metadata_tests {
     use crate::{file_system, test_utils};
 
     use super::*;

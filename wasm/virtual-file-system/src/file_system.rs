@@ -130,7 +130,7 @@ impl VirtualFileSystem {
 }
 
 #[cfg(test)]
-mod tests {
+mod file_system_tests {
     use super::*;
     use wasm_bindgen_test::*;
 
