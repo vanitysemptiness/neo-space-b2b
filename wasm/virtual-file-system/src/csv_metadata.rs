@@ -1,26 +1,117 @@
 use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};
-use std::collections::HashMap;
 use csv::{ReaderBuilder, StringRecord};
 use web_sys::console;
+use std::collections::{HashMap, HashSet};
 
-struct QueryBuilder {
-    query: String,
+use crate::types::{DataType, ColumnMetadata, SqlStatements, NumericStats, StringStats};
+use crate::sql_conversion::generate_sql_statements;
+use crate::statistical_methods::{analyze_distribution, quick_frequency_check};
+
+// Threshold for considering a column categorical/enum
+const ENUM_RATIO_THRESHOLD: f64 = 0.1;
+const MIN_ROWS_FOR_ENUM: usize = 10;
+
+#[derive(Debug)]
+struct ColumnAnalysis {
+    could_be_integer: bool,
+    could_be_float: bool,
+    could_be_boolean: bool,
+    could_be_enum: bool,
+    unique_values: HashSet<String>,
+    total_values: usize,
+    non_empty_values: usize,
 }
 
-impl QueryBuilder {
-    fn new(initial: impl Into<String>) -> Self {
-        QueryBuilder {
-            query: initial.into()
+impl ColumnAnalysis {
+    fn new() -> Self {
+        ColumnAnalysis {
+            could_be_integer: true,
+            could_be_float: true,
+            could_be_boolean: true,
+            could_be_enum: true,
+            unique_values: HashSet::new(),
+            total_values: 0,
+            non_empty_values: 0,
         }
     }
+}
 
-    fn push(&mut self, sql: impl Into<String>) {
-        self.query.push_str(&sql.into());
+fn analyze_column(values: impl Iterator<Item = String>) -> ColumnAnalysis {
+    let mut analysis = ColumnAnalysis::new();
+    
+    for value in values {
+        analysis.total_values += 1;
+        
+        if !value.trim().is_empty() {
+            analysis.non_empty_values += 1;
+            analysis.unique_values.insert(value.clone());
+            
+            analysis.could_be_integer &= could_be_integer(&value);
+            analysis.could_be_float &= could_be_float(&value);
+            analysis.could_be_boolean &= could_be_boolean(&value);
+        }
     }
+    
+    analysis.could_be_enum = could_be_enum(&analysis);
+    
+    analysis
+}
 
-    fn build(self) -> String {
-        self.query
+fn could_be_integer(value: &str) -> bool {
+    value.trim().parse::<i64>().is_ok()
+}
+
+fn could_be_float(value: &str) -> bool {
+    value.trim().parse::<f64>().is_ok()
+}
+
+fn could_be_boolean(value: &str) -> bool {
+    match value.trim().to_lowercase().as_str() {
+        "true" | "false" | "1" | "0" | "yes" | "no" | "t" | "f" | "y" | "n" => true,
+        _ => false
+    }
+}
+
+// When is something likely categorical
+// Limited set (1-8)
+// Each value represents a distinct group
+// Values have semantic meaning beyond their numeric value
+pub fn could_be_enum(analysis: &ColumnAnalysis) -> bool {
+    // Quick rejection checks
+    if analysis.total_values < MIN_ROWS_FOR_ENUM {
+        return false;
+    }
+    
+    // Convert unique_values to Vec<String> for analysis
+    let values: Vec<String> = analysis.unique_values.iter().cloned().collect();
+    
+    // Do quick frequency check first
+    let quick_check = quick_frequency_check(&values);
+    if !quick_check.should_analyze {
+        return false;
+    }
+    
+    // Only if quick check passes, do full distribution analysis
+    let distribution = analyze_distribution(&values);
+    distribution.is_categorical
+}
+
+fn determine_best_type(analysis: &ColumnAnalysis) -> DataType {
+    if analysis.unique_values.is_empty() {
+        return DataType::Text;
+    }
+    
+    if analysis.could_be_boolean && analysis.unique_values.len() <= 2 {
+        DataType::Boolean
+    } else if analysis.could_be_integer {
+        DataType::Integer
+    } else if analysis.could_be_float {
+        DataType::Float
+    } else if analysis.could_be_enum {
+        DataType::Enum
+    } else {
+        DataType::Text
     }
 }
 
@@ -34,57 +125,81 @@ pub struct CSVMetadata {
     sql_statements: Option<SqlStatements>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-struct ColumnMetadata {
-    name: String,
-    data_type: DataType,
-    sample_values: Vec<String>,
-    nullable: bool,
-    unique_count: usize,
-    numeric_stats: Option<NumericStats>,
-    string_stats: Option<StringStats>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct NumericStats {
-    min: f64,
-    max: f64,
-    mean: f64,
-    null_count: usize,
-    distinct_count: usize,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct StringStats {
-    min_length: usize,
-    max_length: usize,
-    null_count: usize,
-    distinct_count: usize,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-enum DataType {
-    Integer,
-    Float,
-    Text,
-    Unknown,
-}
-
-impl DataType {
-    fn to_sql_type(&self) -> &str {
-        match self {
-            DataType::Integer => "INTEGER",
-            DataType::Float => "NUMERIC",
-            DataType::Text => "TEXT",
-            DataType::Unknown => "TEXT",
+#[wasm_bindgen]
+impl CSVMetadata {
+    #[wasm_bindgen(constructor)]
+    pub fn new(csv_data: &[u8]) -> Result<CSVMetadata, JsValue> {
+        console::log_1(&"Starting CSV metadata analysis...".into());
+        
+        let mut reader = ReaderBuilder::new()
+            .has_headers(true)
+            .from_reader(csv_data);
+        
+        let headers = reader.headers()
+            .map_err(|e| {
+                console::error_1(&format!("Header read error: {}", e).into());
+                JsValue::from_str(&format!("Failed to read headers: {}", e))
+            })?
+            .clone();
+        
+        let mut column_values: HashMap<String, Vec<String>> = headers.iter()
+            .map(|h| (h.to_string(), Vec::new()))
+            .collect();
+        
+        let mut row_count = 0;
+        let mut sample_rows = Vec::with_capacity(5);
+        
+        let mut record = StringRecord::new();
+        while row_count < 1000 && reader.read_record(&mut record)
+            .map_err(|e| JsValue::from_str(&e.to_string()))? 
+        {
+            row_count += 1;
+            
+            if sample_rows.len() < 5 {
+                sample_rows.push(record.iter().map(String::from).collect());
+            }
+            
+            for (i, value) in record.iter().enumerate() {
+                let col_name = headers.get(i).unwrap().to_string();
+                column_values.get_mut(&col_name).unwrap().push(value.to_string());
+            }
         }
+        
+        let mut columns = HashMap::new();
+        for (col_name, values) in column_values {
+            let analysis = analyze_column(values.into_iter());
+            let data_type = determine_best_type(&analysis);
+            let unique_count = analysis.unique_values.len();
+            let sample_values: Vec<String> = analysis.unique_values
+                .into_iter()
+                .take(5)
+                .collect();
+                    
+            columns.insert(col_name.clone(), ColumnMetadata {
+                name: col_name,
+                data_type,
+                sample_values,
+                nullable: analysis.non_empty_values < analysis.total_values,
+                unique_count,
+                numeric_stats: None,
+                string_stats: None,
+            });
+        }
+        
+        let sql_statements = Some(generate_sql_statements("my_table", &columns));
+        
+        let metadata = CSVMetadata {
+            row_count,
+            column_count: headers.len(),
+            columns,
+            sample_rows,
+            sql_statements,
+        };
+        
+        console::log_1(&format!("{}", metadata).into());
+        
+        Ok(metadata)
     }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct SqlStatements {
-    pub create_table: String,
-    pub insert_template: String,
 }
 
 impl std::fmt::Display for CSVMetadata {
@@ -134,179 +249,12 @@ impl std::fmt::Display for CSVMetadata {
     }
 }
 
-#[wasm_bindgen]
-impl CSVMetadata {
-    #[wasm_bindgen(constructor)]
-    pub fn new(csv_data: &[u8]) -> Result<CSVMetadata, JsValue> {
-        console::log_1(&"Starting CSV metadata analysis...".into());
-        
-        let mut reader = ReaderBuilder::new()
-            .has_headers(true)
-            .from_reader(csv_data);
-        
-        let headers = reader.headers()
-            .map_err(|e| {
-                console::error_1(&format!("Header read error: {}", e).into());
-                JsValue::from_str(&format!("Failed to read headers: {}", e))
-            })?
-            .clone();
-        
-        console::log_1(&format!("Found {} columns: {:?}", headers.len(), headers).into());
-        
-        let mut columns: HashMap<String, ColumnMetadata> = HashMap::new();
-        let mut sample_rows: Vec<Vec<String>> = Vec::with_capacity(5);
-        let mut row_count = 0;
-        let mut value_counts: HashMap<String, HashMap<String, usize>> = HashMap::new();
-        
-        // Initialize columns
-        for header in headers.iter() {
-            columns.insert(header.to_string(), ColumnMetadata {
-                name: header.to_string(),
-                data_type: DataType::Unknown,
-                sample_values: Vec::with_capacity(5),
-                nullable: false,
-                unique_count: 0,
-                numeric_stats: None,
-                string_stats: None,
-            });
-        }
-        
-        let mut record = StringRecord::new();
-        while row_count < 1000 {
-            // Convert CSV error to JsValue explicitly
-            if !reader.read_record(&mut record).map_err(|e| JsValue::from_str(&e.to_string()))? {
-                break;
-            }
-            
-            row_count += 1;
-            
-            if sample_rows.len() < 5 {
-                sample_rows.push(record.iter().map(String::from).collect());
-            }
-            
-            for (i, value) in record.iter().enumerate() {
-                let col_name = headers.get(i).unwrap().to_string();
-                let col_meta = columns.get_mut(&col_name).unwrap();
-                
-                value_counts
-                    .entry(col_name.clone())
-                    .or_default()
-                    .entry(value.to_string())
-                    .and_modify(|count| *count += 1)
-                    .or_insert(1);
-                
-                if col_meta.sample_values.len() < 5 {
-                    col_meta.sample_values.push(value.to_string());
-                }
-                
-                if let Some(inferred_type) = infer_data_type(value) {
-                    match col_meta.data_type {
-                        DataType::Unknown => {
-                            col_meta.data_type = inferred_type;
-                        },
-                        DataType::Integer => {
-                            if matches!(inferred_type, DataType::Float) {
-                                col_meta.data_type = DataType::Float;
-                            }
-                        },
-                        _ => {}
-                    }
-                }
-            }
-        }
-        
-        for (col_name, counts) in value_counts {
-            if let Some(col_meta) = columns.get_mut(&col_name) {
-                col_meta.unique_count = counts.len();
-            }
-        }
-        
-        let sql_statements = generate_sql_statements("my_table", &columns);
-        
-        let metadata = CSVMetadata {
-            row_count,
-            column_count: headers.len(),
-            columns,
-            sample_rows,
-            sql_statements: Some(sql_statements),
-        };
-        
-        console::log_1(&format!("{}", metadata).into());
-        
-        Ok(metadata)
-    }
-    
-    #[wasm_bindgen(getter)]
-    pub fn sql(&self) -> Option<String> {
-        self.sql_statements.as_ref().map(|s| s.create_table.clone())
-    }
-    
-    #[wasm_bindgen(getter)]
-    pub fn insert_template(&self) -> Option<String> {
-        self.sql_statements.as_ref().map(|s| s.insert_template.clone())
-    }
-}
-
-fn infer_data_type(value: &str) -> Option<DataType> {
-    if value.is_empty() {
-        return None;
-    }
-    
-    if value.parse::<i64>().is_ok() {
-        Some(DataType::Integer)
-    } else if value.parse::<f64>().is_ok() {
-        Some(DataType::Float)
-    } else {
-        Some(DataType::Text)
-    }
-}
-
-fn generate_sql_statements(table_name: &str, columns: &HashMap<String, ColumnMetadata>) -> SqlStatements {
-    let mut create_builder = QueryBuilder::new(format!("CREATE TABLE {} (\n", table_name));
-    
-    let column_defs: Vec<String> = columns.iter()
-        .map(|(name, meta)| {
-            format!("    {} {} {}",
-                name,
-                meta.data_type.to_sql_type(),
-                if meta.nullable { "NULL" } else { "NOT NULL" }
-            )
-        })
-        .collect();
-    
-    create_builder.push(column_defs.join(",\n"));
-    create_builder.push("\n);");
-    
-    let mut insert_builder = QueryBuilder::new(format!("INSERT INTO {} (", table_name));
-    
-    // Column names
-    insert_builder.push(
-        columns.keys()
-            .map(|k| k.to_string())
-            .collect::<Vec<_>>()
-            .join(", ")
-    );
-    
-    // Parameters
-    insert_builder.push(") VALUES (");
-    insert_builder.push(
-        (1..=columns.len())
-            .map(|i| format!("${}", i))
-            .collect::<Vec<_>>()
-            .join(", ")
-    );
-    insert_builder.push(");");
-
-    SqlStatements {
-        create_table: create_builder.build(),
-        insert_template: insert_builder.build(),
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use wasm_bindgen_test::*;
+
+    pub const POKEMON_CSV: &[u8] = include_bytes!("../../../datasets/pokemon.csv");
 
     #[wasm_bindgen_test]
     fn test_csv_metadata_generation() {
@@ -323,12 +271,6 @@ mod tests {
         assert!(matches!(columns.get("name").unwrap().data_type, DataType::Text));
         assert!(matches!(columns.get("price").unwrap().data_type, DataType::Float));
         assert!(matches!(columns.get("quantity").unwrap().data_type, DataType::Integer));
-
-        // Test SQL generation
-        let sql = metadata.sql().unwrap();
-        assert!(sql.contains("CREATE TABLE my_table"));
-        assert!(sql.contains("id INTEGER"));
-        assert!(sql.contains("price NUMERIC"));
     }
 
     #[wasm_bindgen_test]
@@ -352,5 +294,70 @@ mod tests {
         
         let columns = &metadata.columns;
         assert!(matches!(columns.get("mixed").unwrap().data_type, DataType::Float));
+    }
+
+    #[wasm_bindgen_test]
+    fn test_pokemon_csv() {
+        console::log_1(&"Starting Pokemon CSV test".into());
+        
+        let csv_data = POKEMON_CSV;
+        let bytes: Vec<u8> = csv_data.to_vec();
+        
+        let metadata = CSVMetadata::new(&bytes).unwrap();
+        console::log_1(&format!("Pokemon CSV Metadata:\n{}", metadata).into());
+        
+        let columns = &metadata.columns;
+        
+        // Test column count and basic structure
+        assert!(metadata.column_count > 0);
+        
+        // Identifier columns
+        assert!(matches!(columns.get("#").unwrap().data_type, DataType::Integer));
+        // there are dupes for mega evolutions so not unique in this case, nor is it an identifier column
+        // assert_eq!(columns.get("#").unwrap().unique_count, metadata.row_count);  // Should be unique
+        
+        assert!(matches!(columns.get("Name").unwrap().data_type, DataType::Text));
+        assert_eq!(columns.get("Name").unwrap().unique_count, metadata.row_count); // Should be unique
+        
+        // Enum columns
+        assert!(matches!(columns.get("Type 1").unwrap().data_type, DataType::Enum));
+        assert!(columns.get("Type 1").unwrap().unique_count < 20); // Pokemon has 18 types
+        
+        assert!(matches!(columns.get("Type 2").unwrap().data_type, DataType::Enum));
+        assert!(columns.get("Type 2").unwrap().unique_count < 20);
+        
+        // Integer stats columns - verify type and ranges
+        let stat_columns = ["Total", "HP", "Attack", "Defense", "Sp. Atk", "Sp. Def", "Speed"];
+        for col_name in stat_columns.iter() {
+            let col = columns.get(*col_name).unwrap();
+            assert!(
+                matches!(col.data_type, DataType::Integer),
+                "Expected {} to be Integer, got {:?}", col_name, col.data_type
+            );
+            
+            if let Some(stats) = &col.numeric_stats {
+                assert!(
+                    stats.min >= 0 && stats.max <= 800_i64,
+                    "Stats for {} outside expected range: min={}, max={}", 
+                    col_name, stats.min, stats.max
+                );
+            }
+        }
+        
+        // Generation - should be detected as enum due to low cardinality
+        let gen_col = columns.get("Generation").unwrap();
+        assert!(
+            matches!(gen_col.data_type, DataType::Enum),
+            "Expected Generation to be Enum, got {:?}", gen_col.data_type
+        );
+        assert!(gen_col.unique_count <= 8); // Pokemon has 8 generations max
+        
+        // Legendary - should be boolean
+        let legendary_col = columns.get("Legendary").unwrap();
+        assert!(
+            matches!(legendary_col.data_type, DataType::Boolean),
+            "Expected Legendary to be Boolean, got {:?}", legendary_col.data_type
+        );
+        assert_eq!(legendary_col.unique_count, 2); // Only true/false
     }
 }
