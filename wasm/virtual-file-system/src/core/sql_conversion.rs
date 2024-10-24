@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::types::{SqlStatements, ColumnMetadata, DataType};
+use crate::core::types::{SqlStatements, ColumnMetadata, DataType};
 
 struct QueryBuilder {
     query: String,

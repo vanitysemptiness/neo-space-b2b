@@ -1,6 +1,4 @@
 use std::collections::HashMap;
-use wasm_bindgen::prelude::*;
-use web_sys::console;
 
 const MIN_CATEGORY_SIZE_RATIO: f64 = 0.02;  // Min 5% of values to consider a category
 const MIN_TOTAL_VALUES: usize = 10;          // Minimum values needed for statistical analysis
@@ -288,7 +286,7 @@ mod tests {
     #[test]
     fn test_pokemon_types() {
         // Read and parse the Pokemon CSV
-        const pokemon_data: &[u8] = include_bytes!("../../../datasets/pokemon.csv");
+        const pokemon_data: &[u8] = include_bytes!("../../../../datasets/pokemon.csv");
         let mut rdr = csv::ReaderBuilder::new()
             .has_headers(true)
             .from_reader(&pokemon_data[..]);
