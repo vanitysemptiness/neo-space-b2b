@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
-const MIN_CATEGORY_SIZE_RATIO: f64 = 0.05;  // Min 5% of values to consider a category
+const MIN_CATEGORY_SIZE_RATIO: f64 = 0.02;  // Min 5% of values to consider a category
 const MIN_TOTAL_VALUES: usize = 10;          // Minimum values needed for statistical analysis
 const MAX_CATEGORIES: usize = 20;            // Maximum reasonable number of categories
 const CONFIDENCE_THRESHOLD: f64 = 0.7;       // Threshold for categorical determination
@@ -94,7 +94,7 @@ pub fn analyze_distribution(values: &[String]) -> DistributionAnalysis {
             .all(|&count| count as f64 >= min_category_size);
             
         if all_categories_significant {
-            console::log_1(&"Found small but significant categorical set".into());
+            // console::log_1(&"Found small but significant categorical set".into());
             return create_analysis(true, 1.0, unique_count, frequencies, total_count);
         }
     }
@@ -157,23 +157,27 @@ fn calculate_confidence_score(
     distribution_score: f64,
     entropy: f64,
 ) -> f64 {
-    let unique_ratio = unique_count as f64 / total_count as f64;
     let mut score = 0.0;
     
-    // More weight to small, well-distributed sets
-    if unique_count <= 8 {
-        score += 0.3 * (1.0 - (unique_count as f64 / 8.0));
+    // Factor 1: Category stability (0.4 weight)
+    // For categorical data, categories shouldn't grow with data size
+    let category_ratio = unique_count as f64 / (total_count as f64).sqrt();
+    score += 0.4 * (1.0 / (1.0 + category_ratio));
+    
+    // Factor 2: Repeat ratio (0.4 weight)
+    // Most important - categorical data should have lots of repeats
+    score += 0.4 * repeat_ratio;
+    
+    // Factor 3: Category utilization (0.2 weight)
+    // All categories should be used somewhat, but don't need to be even
+    let min_usage = MIN_CATEGORY_SIZE_RATIO;
+    let categories_well_used = entropy / unique_count as f64;
+    score += 0.2 * categories_well_used.min(1.0);
+    
+    // Bonus for ideal category count range (like Pokemon's 18 types)
+    if (5..=25).contains(&unique_count) && repeat_ratio > 0.5 {
+        score += 0.1;
     }
-    
-    // High repeat ratio is good
-    score += 0.3 * repeat_ratio;
-    
-    // Good distribution is important
-    score += 0.2 * distribution_score;
-    
-    // Low entropy is good for categories
-    let normalized_entropy = 1.0 / (1.0 + entropy);
-    score += 0.2 * normalized_entropy;
     
     score.min(1.0).max(0.0)
 }
@@ -190,25 +194,25 @@ fn create_analysis(
     let distribution_score = calculate_distribution_score(&frequencies, total_count);
     let entropy = calculate_entropy(&frequencies, total_count);
 
-    console::log_1(&format!(
-        "Distribution Analysis:
-        Categories: {}
-        Total Values: {}
-        Unique Ratio: {:.3}
-        Repeat Ratio: {:.3}
-        Distribution Score: {:.3}
-        Entropy: {:.3}
-        Confidence: {:.3}
-        Is Categorical: {}",
-        category_count,
-        total_count,
-        unique_ratio,
-        repeat_ratio,
-        distribution_score,
-        entropy,
-        confidence_score,
-        is_categorical
-    ).into());
+    // console::log_1(&format!(
+    //     "Distribution Analysis:
+    //     Categories: {}
+    //     Total Values: {}
+    //     Unique Ratio: {:.3}
+    //     Repeat Ratio: {:.3}
+    //     Distribution Score: {:.3}
+    //     Entropy: {:.3}
+    //     Confidence: {:.3}
+    //     Is Categorical: {}",
+    //     category_count,
+    //     total_count,
+    //     unique_ratio,
+    //     repeat_ratio,
+    //     distribution_score,
+    //     entropy,
+    //     confidence_score,
+    //     is_categorical
+    // ).into());
 
     DistributionAnalysis {
         is_categorical,
@@ -279,5 +283,57 @@ mod tests {
         ].iter().map(|s| s.to_string()).collect();
         let analysis = analyze_distribution(&boolean);
         assert!(analysis.is_categorical);
+    }
+
+    #[test]
+    fn test_pokemon_types() {
+        // Read and parse the Pokemon CSV
+        const pokemon_data: &[u8] = include_bytes!("../../../datasets/pokemon.csv");
+        let mut rdr = csv::ReaderBuilder::new()
+            .has_headers(true)
+            .from_reader(&pokemon_data[..]);
+        
+        // Extract Type 1 column
+        let type_1: Vec<String> = rdr.records()
+            .filter_map(|result| result.ok())
+            .filter_map(|record| record.get(2).map(String::from))  // Assuming "Type 1" is the 3rd column
+            .collect();
+    
+        let analysis = analyze_distribution(&type_1);
+        
+        println!("\nPokemon Type 1 Analysis Debug:");
+        println!("Total pokemon: {}", type_1.len());
+        println!("Unique types: {}", analysis.category_count);
+        println!("Confidence score: {:.3}", analysis.confidence_score);
+        println!("Distribution score: {:.3}", analysis.debug_info.distribution_score);
+        println!("Entropy: {:.3}", analysis.debug_info.entropy);
+        println!("Repeat ratio: {:.3}", analysis.debug_info.repeat_ratio);
+        
+        println!("\nType 1 Frequencies:");
+        let mut frequencies: Vec<_> = analysis.debug_info.value_frequencies.iter().collect();
+        frequencies.sort_by(|a, b| b.1.cmp(a.1));
+        for (type_name, count) in frequencies {
+            println!("{}: {} occurrences ({:.1}%)", 
+                type_name, 
+                count, 
+                (*count as f64 / type_1.len() as f64) * 100.0
+            );
+        }
+    
+        assert!(
+            analysis.is_categorical,
+            "Pokemon types should be categorical!\nConfidence Score: {}\nCategory Count: {}\nEntropy: {}", 
+            analysis.confidence_score,
+            analysis.category_count,
+            analysis.debug_info.entropy
+        );
+        
+        // Verify expected properties
+        assert!(analysis.category_count > 10, "Should find at least 10 Pokemon types");
+        assert!(analysis.category_count < 20, "Should find less than 20 Pokemon types");
+        assert!(analysis.confidence_score > CONFIDENCE_THRESHOLD, 
+            "Confidence score {} should exceed threshold {}", 
+            analysis.confidence_score, CONFIDENCE_THRESHOLD
+        );
     }
 }
