@@ -243,33 +243,3 @@ mod tests {
         assert_eq!(legendary_col.unique_count, 2);
     }
 }
-
-// wasm/csv_metadata_bindings.rs
-use wasm_bindgen::prelude::*;
-use web_sys::console;
-
-#[wasm_bindgen]
-pub struct WasmCSVMetadata(CSVMetadata);
-
-#[wasm_bindgen]
-impl WasmCSVMetadata {
-    #[wasm_bindgen(constructor)]
-    pub fn new(csv_data: &[u8]) -> Result<WasmCSVMetadata, JsValue> {
-        console::log_1(&"Starting CSV metadata analysis...".into());
-        
-        CSVMetadata::analyze(csv_data)
-            .map(WasmCSVMetadata)
-            .map_err(|e| JsValue::from_str(&e))
-    }
-
-    #[wasm_bindgen]
-    pub fn to_string(&self) -> String {
-        format!("{:#?}", self.0)
-    }
-
-    #[wasm_bindgen]
-    pub fn get_metadata(&self) -> Result<JsValue, JsValue> {
-        serde_wasm_bindgen::to_value(&self.0)
-            .map_err(|e| JsValue::from_str(&e.to_string()))
-    }
-}
