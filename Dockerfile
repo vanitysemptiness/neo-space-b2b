@@ -1,41 +1,26 @@
 # Build stage
-FROM rust:1.54 as builder
+FROM node:18-alpine as build
 
+# Set working directory
 WORKDIR /app
 
-# Install Node.js
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt-get install -y nodejs
-
-# Install wasm-pack
-RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
-# Copy package.json and package-lock.json
+# Copy package files
 COPY package*.json ./
 
-# Install npm dependencies
-RUN npm ci
+# Install dependencies
+RUN npm install
 
-# Copy source code
-COPY src ./src
-COPY wasm ./wasm
-COPY webpack.config.js ./
+# Copy project files
+COPY . .
 
-# Build WASM
-RUN cd wasm && wasm-pack build --target web
-
-# Build React app
+# Build the app
 RUN npm run build
 
-# Production stage
-FROM nginx:alpine
+# Install serve package globally
+RUN npm install -g serve
 
-# Copy built assets from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Expose port 3000
+EXPOSE 8080
 
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Start serve
+CMD ["serve", "-s", "build", "-l", "3000"]
