@@ -177,3 +177,10 @@ yarn-error.log*
 
 # WASM
 **/target
+
+#python
+**/venv
+**/.venv
+**/env
+**/dist
+**/minimal_api_gpt
