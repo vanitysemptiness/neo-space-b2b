@@ -1,25 +1,23 @@
-
-what If I write someting will it know its an error;
-
 use wasm_bindgen::prelude::*;
 
-/* 
+/*
     Rust is null safe when you use Option<whatever_type>
     It's wrapped and you extract the value or get an error, not a null pointer.
 
     Above Result is used for operations that might fail
     () is like void in java, not returning any value.
     JsValue is a type from wasm_bindgen that represents a JavaScript value
-    Result<(), JsValue> means the function will either return successfully with 
+    Result<(), JsValue> means the function will either return successfully with
         no value (Ok(())), or fail with a JavaScript value (Err(JsValue))
 
     #[wasm_bindgen(start)] compiles the code to webassembly
-*/ 
+*/
 #[wasm_bindgen(start)]
-pub fn main() -> Result<(), JsValue> { // 
+pub fn main() -> Result<(), JsValue> {
+    //
     // window is the global window obj of webpage, .expect accesses whats in the Option
     let window = web_sys::window().expect("no global window... so creating one");
-    // representation of the Domain Object Model of the webpage, 
+    // representation of the Domain Object Model of the webpage,
     let document = window.document().expect("should have a doc window");
     // this is the <body> element of the webpage
     let body = document.body().expect("doc body");
