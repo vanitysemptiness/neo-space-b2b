@@ -1,0 +1,7 @@
+{
+  "rust-analyzer.cargo.features": "all",
+  "rust-analyzer.cargo.loadOutDirsFromCheck": true,
+  "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
+  "rust-analyzer.checkOnSave.command": "clippy",
+  "rust-analyzer.checkOnSave.extraArgs": ["--all-targets", "--all-features"]
+}

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "setup": "npm install && npm run build && npm start"
+    "setup": "npm run build && npm start"
   },
   "dependencies": {
     "lucide-react": "^0.453.0",

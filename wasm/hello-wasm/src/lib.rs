@@ -1,5 +1,5 @@
 
-
+what If I write someting will it know its an error;
 
 use wasm_bindgen::prelude::*;
 
