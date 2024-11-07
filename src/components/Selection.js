@@ -45,7 +45,7 @@ const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupT
             const zoom = fabricCanvas.getZoom();
             const vpt = fabricCanvas.viewportTransform;
             setPopupToolbarPosition({
-                top: (boundingRect.top * zoom + vpt[5]) + boundingRect.height * zoom + 10,
+                top: (boundingRect.top * zoom + vpt[5]) - 50,
                 left: (boundingRect.left * zoom + vpt[4]) + (boundingRect.width * zoom / 2) - 50
             });
         }
@@ -81,16 +81,36 @@ const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupT
 
     useEffect(() => {
         if (fabricCanvas) {
+            let isMoving = false;
+
+            const handleMoving = () => {
+                isMoving = true;
+                setShowPopupToolbar(false);
+            };
+
+            const handleModified = () => {
+                if (isMoving) {
+                    isMoving = false;
+                    handleSelection();
+                }
+            };
+
             fabricCanvas.on('selection:created', handleSelection);
             fabricCanvas.on('selection:updated', handleSelection);
             fabricCanvas.on('selection:cleared', () => setShowPopupToolbar(false));
-            fabricCanvas.on('object:moving', handleSelection);
+            fabricCanvas.on('object:moving', handleMoving);
+            fabricCanvas.on('object:modified', handleModified);
+            fabricCanvas.on('object:scaling', () => setShowPopupToolbar(false));
+            fabricCanvas.on('object:rotating', () => setShowPopupToolbar(false));
 
             return () => {
                 fabricCanvas.off('selection:created', handleSelection);
                 fabricCanvas.off('selection:updated', handleSelection);
                 fabricCanvas.off('selection:cleared');
-                fabricCanvas.off('object:moving', handleSelection);
+                fabricCanvas.off('object:moving', handleMoving);
+                fabricCanvas.off('object:modified', handleModified);
+                fabricCanvas.off('object:scaling');
+                fabricCanvas.off('object:rotating');
             };
         }
     }, [fabricCanvas, handleSelection, setShowPopupToolbar]);
