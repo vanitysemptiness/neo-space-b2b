@@ -46,7 +46,7 @@ function Toolbar({
           {tool.icon}
         </button>
       ))}
-      <SearchBar />
+      <SearchBar currentTool={currentTool} setCurrentTool={setCurrentTool}/>
       <input
         type="file"
         ref={fileInputRef}
