@@ -3,6 +3,66 @@ import PopupToolbar from './PopupToolbar';
 import { useColor } from './ColorContext';
 import { saveToLocalStorage } from './CanvasPersistence';
 
+class SelectionTool {
+    constructor(updatePopupPosition, setShowPopupToolbar, handleSelection) {
+        this.isMoving = false;
+        this.updatePopupPosition = updatePopupPosition;
+        this.setShowPopupToolbar = setShowPopupToolbar;
+        this.handleSelection = handleSelection;
+        
+        // Bind methods to preserve context
+        this.handleMoving = this.handleMoving.bind(this);
+        this.handleModified = this.handleModified.bind(this);
+        this.handleCleared = this.handleCleared.bind(this);
+    }
+
+    handleMoving() {
+        this.isMoving = true;
+        this.setShowPopupToolbar(false);
+    }
+
+    handleModified() {
+        if (this.isMoving) {
+            this.isMoving = false;
+            this.handleSelection();
+        }
+    }
+
+    handleCleared() {
+        this.setShowPopupToolbar(false);
+    }
+
+    attach(canvas) {
+        if (!canvas) return;
+        
+        this.canvas = canvas;
+        
+        // Attach all listeners
+        canvas.on('selection:created', this.handleSelection);
+        canvas.on('selection:updated', this.handleSelection);
+        canvas.on('selection:cleared', this.handleCleared);
+        canvas.on('object:moving', this.handleMoving);
+        canvas.on('object:modified', this.handleModified);
+        canvas.on('object:scaling', this.handleCleared);
+        canvas.on('object:rotating', this.handleCleared);
+    }
+
+    detach() {
+        if (!this.canvas) return;
+        
+        // Remove all listeners
+        this.canvas.off('selection:created', this.handleSelection);
+        this.canvas.off('selection:updated', this.handleSelection);
+        this.canvas.off('selection:cleared', this.handleCleared);
+        this.canvas.off('object:moving', this.handleMoving);
+        this.canvas.off('object:modified', this.handleModified);
+        this.canvas.off('object:scaling', this.handleCleared);
+        this.canvas.off('object:rotating', this.handleCleared);
+        
+        this.canvas = null;
+    }
+}
+
 const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupToolbarPosition, setPopupToolbarPosition }) => {
     const { currentColor } = useColor();
 
@@ -31,10 +91,6 @@ const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupT
             }
         }
     }, [fabricCanvas, updateObjectColor]);
-
-    useEffect(() => {
-        updateSelectedObjectsColor(currentColor);
-    }, [currentColor, updateSelectedObjectsColor]);
 
     const updatePopupPosition = useCallback(() => {
         if (!fabricCanvas) return;
@@ -79,41 +135,28 @@ const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupT
         }
     }, [fabricCanvas, setShowPopupToolbar]);
 
+    // Color effect
     useEffect(() => {
-        if (fabricCanvas) {
-            let isMoving = false;
+        updateSelectedObjectsColor(currentColor);
+    }, [currentColor, updateSelectedObjectsColor]);
 
-            const handleMoving = () => {
-                isMoving = true;
-                setShowPopupToolbar(false);
-            };
+    // Selection tool effect
+    useEffect(() => {
+        if (!fabricCanvas) return;
 
-            const handleModified = () => {
-                if (isMoving) {
-                    isMoving = false;
-                    handleSelection();
-                }
-            };
+        const selectionTool = new SelectionTool(
+            updatePopupPosition,
+            setShowPopupToolbar,
+            handleSelection
+        );
 
-            fabricCanvas.on('selection:created', handleSelection);
-            fabricCanvas.on('selection:updated', handleSelection);
-            fabricCanvas.on('selection:cleared', () => setShowPopupToolbar(false));
-            fabricCanvas.on('object:moving', handleMoving);
-            fabricCanvas.on('object:modified', handleModified);
-            fabricCanvas.on('object:scaling', () => setShowPopupToolbar(false));
-            fabricCanvas.on('object:rotating', () => setShowPopupToolbar(false));
+        selectionTool.attach(fabricCanvas);
 
-            return () => {
-                fabricCanvas.off('selection:created', handleSelection);
-                fabricCanvas.off('selection:updated', handleSelection);
-                fabricCanvas.off('selection:cleared');
-                fabricCanvas.off('object:moving', handleMoving);
-                fabricCanvas.off('object:modified', handleModified);
-                fabricCanvas.off('object:scaling');
-                fabricCanvas.off('object:rotating');
-            };
-        }
-    }, [fabricCanvas, handleSelection, setShowPopupToolbar]);
+        // Cleanup function
+        return () => {
+            selectionTool.detach();
+        };
+    }, [fabricCanvas, updatePopupPosition, setShowPopupToolbar, handleSelection]);
 
     return (
         <>
