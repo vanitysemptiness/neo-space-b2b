@@ -39,7 +39,7 @@ useEffect(() => {
       <button
         onClick={handleBrainClick}
         className={`tool-button ${currentTool === 'claude' ? 'selected' : ''}`}
-        title="Ask Claude"
+        title="AI"
       >
         <Brain size={20} />
       </button>
@@ -70,7 +70,7 @@ useEffect(() => {
               outline: 'none',
               boxShadow: '0 0 20px rgba(0,0,0,0.2)'
             }}
-            placeholder="Ask Claude..."
+            placeholder="search or manipulate canvas with ai..."
             onKeyDown={handleKeyDown}
             autoFocus
           />
