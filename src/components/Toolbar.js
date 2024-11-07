@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { FiMousePointer, FiEdit2, FiUpload, FiSquare, FiTrash2, FiType, FiMove } from 'react-icons/fi';
 import ColorPickerButton from './ColorPickerButton';
+import SearchBar from './SearchBar';
 import { useColor } from './ColorContext';
 
 function Toolbar({ 
@@ -45,6 +46,7 @@ function Toolbar({
           {tool.icon}
         </button>
       ))}
+      <SearchBar />
       <input
         type="file"
         ref={fileInputRef}
