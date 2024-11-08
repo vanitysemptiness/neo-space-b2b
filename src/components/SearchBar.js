@@ -1,16 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Brain } from 'lucide-react';
+import Anthropic from '@anthropic-ai/sdk';
+
+const client = new Anthropic({
+  apiKey: process.env.REACT_APP_ANTHROPIC_API_KEY,
+  dangerouslyAllowBrowser: true  // WARNING: Only for local development
+});
 
 const SearchBar = ({ currentTool, setCurrentTool }) => {
   const [isVisible, setIsVisible] = useState(false);
   const inputRef = useRef(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const text = inputRef.current.value.trim();
     if (text) {
-      console.log('Submitted text:', text);
-      inputRef.current.value = '';
+      try {
+        const stream = await client.messages.stream({
+          messages: [{ role: 'user', content: text }],
+          model: 'claude-3-5-sonnet-20241022',
+          max_tokens: 1024,
+        });
+
+        stream.on('text', text => {
+          console.log('Received text:', text);
+        });
+
+        stream.on('error', error => {
+          console.error('Stream error:', error);
+        });
+
+        stream.on('end', () => {
+          console.log('Stream ended');
+        });
+
+        inputRef.current.value = '';
+      } catch (error) {
+        console.error('Failed to send message:', error);
+      }
     }
   };
 
@@ -27,19 +54,18 @@ const SearchBar = ({ currentTool, setCurrentTool }) => {
     setCurrentTool(newState ? 'claude' : 'select');
   };
 
-// Hide search bar if user switches to any other tool
-useEffect(() => {
+  useEffect(() => {
     if (currentTool !== 'claude') {
-        setIsVisible(false);
+      setIsVisible(false);
     }
-    }, [currentTool]);
+  }, [currentTool]);
 
   return (
     <div className="inline-block">
       <button
         onClick={handleBrainClick}
         className={`tool-button ${currentTool === 'claude' ? 'selected' : ''}`}
-        title="AI"
+        title="Ask Claude"
       >
         <Brain size={20} />
       </button>
@@ -70,7 +96,7 @@ useEffect(() => {
               outline: 'none',
               boxShadow: '0 0 20px rgba(0,0,0,0.2)'
             }}
-            placeholder="search or manipulate canvas with ai..."
+            placeholder="Ask Claude..."
             onKeyDown={handleKeyDown}
             autoFocus
           />
