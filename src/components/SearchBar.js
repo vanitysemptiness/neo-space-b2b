@@ -3,7 +3,7 @@ import { Brain } from 'lucide-react';
 import Anthropic from '@anthropic-ai/sdk';
 
 const client = new Anthropic({
-  apiKey: process.env.REACT_APP_ANTHROPIC_API_KEY,
+  apiKey: process.env.ANTHROPIC_API_KEY,
   dangerouslyAllowBrowser: true  // WARNING: Only for local development
 });
 

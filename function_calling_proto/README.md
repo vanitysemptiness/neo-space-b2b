@@ -2,6 +2,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+make sure you have anthropic api key configured
+```bash
+touch .env
+# env should look like below, all one line
+ANTHROPIC_API_KEY={your_api_key}
+```
+
 First, run the development server:
 
 ```bash
