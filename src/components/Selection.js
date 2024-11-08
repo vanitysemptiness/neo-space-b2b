@@ -1,96 +1,13 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PopupToolbar from './PopupToolbar';
 import { useColor } from './ColorContext';
 import { saveToLocalStorage } from './CanvasPersistence';
 
-class SelectionTool {
-    constructor(updatePopupPosition, setShowPopupToolbar, handleSelection) {
-        this.isMoving = false;
-        this.updatePopupPosition = updatePopupPosition;
-        this.setShowPopupToolbar = setShowPopupToolbar;
-        this.handleSelection = handleSelection;
-        
-        // Bind methods to preserve context
-        this.handleMoving = this.handleMoving.bind(this);
-        this.handleModified = this.handleModified.bind(this);
-        this.handleCleared = this.handleCleared.bind(this);
-    }
-
-    handleMoving() {
-        this.isMoving = true;
-        this.setShowPopupToolbar(false);
-    }
-
-    handleModified() {
-        if (this.isMoving) {
-            this.isMoving = false;
-            this.handleSelection();
-        }
-    }
-
-    handleCleared() {
-        this.setShowPopupToolbar(false);
-    }
-
-    attach(canvas) {
-        if (!canvas) return;
-        
-        this.canvas = canvas;
-        
-        // Attach all listeners
-        canvas.on('selection:created', this.handleSelection);
-        canvas.on('selection:updated', this.handleSelection);
-        canvas.on('selection:cleared', this.handleCleared);
-        canvas.on('object:moving', this.handleMoving);
-        canvas.on('object:modified', this.handleModified);
-        canvas.on('object:scaling', this.handleCleared);
-        canvas.on('object:rotating', this.handleCleared);
-    }
-
-    detach() {
-        if (!this.canvas) return;
-        
-        // Remove all listeners
-        this.canvas.off('selection:created', this.handleSelection);
-        this.canvas.off('selection:updated', this.handleSelection);
-        this.canvas.off('selection:cleared', this.handleCleared);
-        this.canvas.off('object:moving', this.handleMoving);
-        this.canvas.off('object:modified', this.handleModified);
-        this.canvas.off('object:scaling', this.handleCleared);
-        this.canvas.off('object:rotating', this.handleCleared);
-        
-        this.canvas = null;
-    }
-}
-
-const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupToolbarPosition, setPopupToolbarPosition }) => {
+const Selection = ({ fabricCanvas, currentTool }) => {
     const { currentColor } = useColor();
-
-    const updateObjectColor = useCallback((obj, color) => {
-        if (obj.type === 'path') {
-            obj.set('stroke', color);
-        } else {
-            if (obj.stroke) obj.set('stroke', color);
-            if (obj.fill) obj.set('fill', color);
-        }
-    }, []);
-
-    const updateSelectedObjectsColor = useCallback((color) => {
-        if (fabricCanvas) {
-            const activeObject = fabricCanvas.getActiveObject();
-            if (activeObject) {
-                if (activeObject.type === 'activeSelection') {
-                    activeObject.forEachObject((obj) => {
-                        updateObjectColor(obj, color);
-                    });
-                } else {
-                    updateObjectColor(activeObject, color);
-                }
-                fabricCanvas.renderAll();
-                saveToLocalStorage(fabricCanvas);
-            }
-        }
-    }, [fabricCanvas, updateObjectColor]);
+    const [showPopupToolbar, setShowPopupToolbar] = useState(false);
+    const [popupToolbarPosition, setPopupToolbarPosition] = useState({ top: 0, left: 0 });
+    const [isMoving, setIsMoving] = useState(false);
 
     const updatePopupPosition = useCallback(() => {
         if (!fabricCanvas) return;
@@ -101,72 +18,127 @@ const Selection = ({ fabricCanvas, showPopupToolbar, setShowPopupToolbar, popupT
             const zoom = fabricCanvas.getZoom();
             const vpt = fabricCanvas.viewportTransform;
             setPopupToolbarPosition({
-                top: (boundingRect.top * zoom + vpt[5]) - 50,
+                top: (boundingRect.top * zoom + vpt[5]) + boundingRect.height * zoom + 10,
                 left: (boundingRect.left * zoom + vpt[4]) + (boundingRect.width * zoom / 2) - 50
             });
         }
-    }, [fabricCanvas, setPopupToolbarPosition]);
+    }, [fabricCanvas]);
 
-    const handleSelection = useCallback(() => {
+    const updateObjectColor = useCallback((obj, color) => {
+        if (obj.type === 'path') {
+            obj.set('stroke', color);
+        } else {
+            if (obj.stroke) obj.set('stroke', color);
+            if (obj.fill) obj.set('fill', color);
+        }
+    }, []);
+
+    const updateSelectedObjectsColor = useCallback(() => {
         if (!fabricCanvas) return;
-
+        
         const activeObject = fabricCanvas.getActiveObject();
         if (activeObject) {
+            if (activeObject.type === 'activeSelection') {
+                activeObject.forEachObject((obj) => {
+                    updateObjectColor(obj, currentColor);
+                });
+            } else {
+                updateObjectColor(activeObject, currentColor);
+            }
+            fabricCanvas.renderAll();
+            saveToLocalStorage(fabricCanvas);
+        }
+    }, [fabricCanvas, currentColor, updateObjectColor]);
+
+    const handleSelectionCreated = useCallback(() => {
+        updatePopupPosition();
+        setShowPopupToolbar(true);
+    }, [updatePopupPosition]);
+
+    const handleSelectionUpdated = useCallback(() => {
+        updatePopupPosition();
+        setShowPopupToolbar(true);
+    }, [updatePopupPosition]);
+
+    const handleSelectionCleared = useCallback(() => {
+        setShowPopupToolbar(false);
+    }, []);
+
+    const handleMoving = useCallback(() => {
+        setIsMoving(true);
+        setShowPopupToolbar(false);
+    }, []);
+
+    const handleModified = useCallback(() => {
+        if (isMoving) {
+            setIsMoving(false);
             updatePopupPosition();
             setShowPopupToolbar(true);
-        } else {
-            setShowPopupToolbar(false);
         }
-    }, [fabricCanvas, setShowPopupToolbar, updatePopupPosition]);
+    }, [isMoving, updatePopupPosition]);
 
     const handleDelete = useCallback(() => {
-        if (fabricCanvas) {
-            const activeObject = fabricCanvas.getActiveObject();
-            if (activeObject) {
-                if (activeObject.type === 'activeSelection') {
-                    activeObject.forEachObject((obj) => fabricCanvas.remove(obj));
-                } else {
-                    fabricCanvas.remove(activeObject);
-                }
-                fabricCanvas.discardActiveObject().renderAll();
-                setShowPopupToolbar(false);
-                saveToLocalStorage(fabricCanvas);
+        if (!fabricCanvas) return;
+        
+        const activeObject = fabricCanvas.getActiveObject();
+        if (activeObject) {
+            if (activeObject.type === 'activeSelection') {
+                activeObject.forEachObject((obj) => fabricCanvas.remove(obj));
+            } else {
+                fabricCanvas.remove(activeObject);
             }
+            fabricCanvas.discardActiveObject().renderAll();
+            setShowPopupToolbar(false);
+            saveToLocalStorage(fabricCanvas);
         }
-    }, [fabricCanvas, setShowPopupToolbar]);
+    }, [fabricCanvas]);
 
-    // Color effect
-    useEffect(() => {
-        updateSelectedObjectsColor(currentColor);
-    }, [currentColor, updateSelectedObjectsColor]);
-
-    // Selection tool effect
+    // Set up canvas event listeners
     useEffect(() => {
         if (!fabricCanvas) return;
 
-        const selectionTool = new SelectionTool(
-            updatePopupPosition,
-            setShowPopupToolbar,
-            handleSelection
-        );
+        fabricCanvas.on('selection:created', handleSelectionCreated);
+        fabricCanvas.on('selection:updated', handleSelectionUpdated);
+        fabricCanvas.on('selection:cleared', handleSelectionCleared);
+        fabricCanvas.on('object:moving', handleMoving);
+        fabricCanvas.on('object:modified', handleModified);
 
-        selectionTool.attach(fabricCanvas);
-
-        // Cleanup function
+        // Selection mode based on current tool
+        fabricCanvas.selection = currentTool === 'select';
+        
         return () => {
-            selectionTool.detach();
+            fabricCanvas.off('selection:created', handleSelectionCreated);
+            fabricCanvas.off('selection:updated', handleSelectionUpdated);
+            fabricCanvas.off('selection:cleared', handleSelectionCleared);
+            fabricCanvas.off('object:moving', handleMoving);
+            fabricCanvas.off('object:modified', handleModified);
         };
-    }, [fabricCanvas, updatePopupPosition, setShowPopupToolbar, handleSelection]);
+    }, [
+        fabricCanvas, 
+        currentTool,
+        handleSelectionCreated, 
+        handleSelectionUpdated, 
+        handleSelectionCleared,
+        handleMoving,
+        handleModified
+    ]);
+
+    // Update colors of selected objects when color changes
+    useEffect(() => {
+        updateSelectedObjectsColor();
+    }, [currentColor, updateSelectedObjectsColor]);
 
     return (
         <>
             {showPopupToolbar && (
-                <div style={{
-                    position: 'absolute',
-                    top: `${popupToolbarPosition.top}px`,
-                    left: `${popupToolbarPosition.left}px`,
-                    zIndex: 1000,
-                }}>
+                <div 
+                    style={{
+                        position: 'absolute',
+                        top: `${popupToolbarPosition.top}px`,
+                        left: `${popupToolbarPosition.left}px`,
+                        zIndex: 1000,
+                    }}
+                >
                     <PopupToolbar onDelete={handleDelete} />
                 </div>
             )}

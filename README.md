@@ -10,10 +10,17 @@ the memorey management, rendering of complex screen objects and render culling R
 
 Project Setup
 ---
-two ways to get this to run at `localhost:8080`...
+two ways to get this to run at `localhost:3000`...
+
+```bash
+touch .env
+# env contents, React requires the REACT_APP_ preface or they dont work 🥺
+REACT_APP_ANTHROPIC_API_KEY={your_api_key}
+```
 
 Right now the WASM features are experimental so you can just run the HTML/JS
 ```bash
+npm install
 npm run build
 npm start
 ```

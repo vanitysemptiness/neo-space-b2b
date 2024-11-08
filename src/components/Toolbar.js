@@ -9,10 +9,16 @@ function Toolbar({
   setCurrentTool, 
   onFileUpload, 
   isObjectSelected,
-  onDeleteSelected
+  onDeleteSelected,
+  fabricCanvas
 }) {
   const fileInputRef = useRef(null);
   const { currentColor, changeColor } = useColor();
+
+  const handleToolChange = (toolName) => {
+    console.log('Tool changed:', toolName);
+    setCurrentTool(toolName);
+  };
 
   const tools = [
     { name: 'hand', icon: <FiMove size={20} /> },
@@ -39,14 +45,18 @@ function Toolbar({
       {tools.map((tool) => (
         <button
           key={tool.name}
-          onClick={tool.onClick || (() => setCurrentTool(tool.name))}
+          onClick={tool.onClick || (() => handleToolChange(tool.name))}
           className={`tool-button ${currentTool === tool.name ? 'selected' : ''}`}
           title={tool.name.charAt(0).toUpperCase() + tool.name.slice(1)}
         >
           {tool.icon}
         </button>
       ))}
-      <SearchBar currentTool={currentTool} setCurrentTool={setCurrentTool}/>
+      <SearchBar 
+        currentTool={currentTool} 
+        setCurrentTool={handleToolChange}
+        fabricCanvas={fabricCanvas}
+      />
       <input
         type="file"
         ref={fileInputRef}

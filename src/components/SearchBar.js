@@ -1,44 +1,81 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Brain } from 'lucide-react';
-import Anthropic from '@anthropic-ai/sdk';
+import { LLMCanvasInterface } from './LLMCanvasInterface';
+import { CanvasReferenceError } from './CanvasError';
+import { ClaudeAPI } from './ClaudeAPI';
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-  dangerouslyAllowBrowser: true  // WARNING: Only for local development
-});
+const LLM_INSTRUCTION = `You are a helpful AI assistant that can both engage in normal conversation and manipulate a canvas when asked. You have access to the following canvas manipulation functions:
 
-const SearchBar = ({ currentTool, setCurrentTool }) => {
+- drawSquare(x, y, size, color): Draws a square at position (x,y) with given size and color
+
+If the user's request appears to be asking for canvas manipulation (like drawing shapes), respond with ONLY the appropriate JSON command, no other text.
+
+For example:
+- "draw a blue square" -> respond with only:
+{
+  "name": "drawSquare",
+  "parameters": {
+    "x": 400,
+    "y": 300,
+    "size": 100,
+    "color": "blue"
+  }
+}
+
+For all other queries that don't seem related to canvas manipulation, respond conversationally as you normally would.`;
+
+const SearchBar = ({ currentTool, setCurrentTool, fabricCanvas }) => {
   const [isVisible, setIsVisible] = useState(false);
   const inputRef = useRef(null);
+  const llmInterface = useRef(null);
+  const claudeAPI = useRef(new ClaudeAPI());
+
+  useEffect(() => {
+    if (fabricCanvas && !llmInterface.current) {
+      try {
+        llmInterface.current = new LLMCanvasInterface(fabricCanvas);
+        console.log('LLMCanvasInterface initialized successfully');
+      } catch (error) {
+        if (error instanceof CanvasReferenceError) {
+          console.error('Failed to initialize LLMCanvasInterface: Canvas reference missing');
+        } else {
+          console.error('Unexpected error initializing LLMCanvasInterface:', error);
+        }
+      }
+    }
+  }, [fabricCanvas]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const text = inputRef.current.value.trim();
-    if (text) {
-      try {
-        const stream = await client.messages.stream({
-          messages: [{ role: 'user', content: text }],
-          model: 'claude-3-5-sonnet-20241022',
-          max_tokens: 1024,
-        });
+    const text = inputRef.current?.value.trim();
+    
+    if (!text || !fabricCanvas) return;
 
-        stream.on('text', text => {
-          console.log('Received text:', text);
-        });
-
-        stream.on('error', error => {
-          console.error('Stream error:', error);
-        });
-
-        stream.on('end', () => {
-          console.log('Stream ended');
-        });
-
-        inputRef.current.value = '';
-      } catch (error) {
-        console.error('Failed to send message:', error);
-      }
+    if (!llmInterface.current) {
+      console.error('LLMInterface not initialized');
+      return;
     }
+
+    try {
+      console.log('Sending request to Claude:', text);
+      
+      const response = await claudeAPI.current.streamMessage(text, LLM_INSTRUCTION);
+      console.log('Full response:', response);
+
+      // Try to parse as JSON for canvas commands
+      try {
+        const result = llmInterface.current.executeLLMResponse(response);
+        console.log('Command execution result:', result);
+      } catch (error) {
+        // If it's not valid JSON, treat it as a conversational response
+        console.log('Conversational response:', response);
+      }
+
+    } catch (error) {
+      console.error('Error processing request:', error);
+    }
+
+    inputRef.current.value = '';
   };
 
   const handleKeyDown = (e) => {
@@ -96,7 +133,7 @@ const SearchBar = ({ currentTool, setCurrentTool }) => {
               outline: 'none',
               boxShadow: '0 0 20px rgba(0,0,0,0.2)'
             }}
-            placeholder="Ask Claude..."
+            placeholder="Try: 'draw a blue square' or ask a question"
             onKeyDown={handleKeyDown}
             autoFocus
           />
