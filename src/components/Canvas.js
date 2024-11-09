@@ -33,6 +33,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool, fabricCanvas }, ref) =
           <Square 
             fabricCanvas={fabricCanvas} 
             currentTool={currentTool}
+            setCurrentTool={setCurrentTool}
           />
           <Drawing 
             fabricCanvas={fabricCanvas} 
