@@ -18,7 +18,7 @@ const Selection = ({ fabricCanvas, currentTool }) => {
             const zoom = fabricCanvas.getZoom();
             const vpt = fabricCanvas.viewportTransform;
             setPopupToolbarPosition({
-                top: (boundingRect.top * zoom + vpt[5]) + boundingRect.height * zoom + 10,
+                top: (boundingRect.top * zoom + vpt[5]) - 50, // Position above with 10px gap
                 left: (boundingRect.left * zoom + vpt[4]) + (boundingRect.width * zoom / 2) - 50
             });
         }
