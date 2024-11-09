@@ -2,6 +2,7 @@ import React, { forwardRef, useRef, useEffect } from 'react';
 import Square from './Square';
 import Drawing from './Drawing';
 import Selection from './Selection';
+import TextboxTool from './Textbox';
 
 const Canvas = forwardRef(({ currentTool, setCurrentTool, fabricCanvas }, ref) => {
   const canvasRef = useRef(null);
@@ -42,6 +43,11 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool, fabricCanvas }, ref) =
           <Selection 
             fabricCanvas={fabricCanvas} 
             currentTool={currentTool}
+          />
+          <TextboxTool
+            fabricCanvas={fabricCanvas}
+            currentTool={currentTool}
+            setCurrentTool={setCurrentTool}
           />
         </>
       )}
