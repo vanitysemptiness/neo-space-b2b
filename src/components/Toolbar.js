@@ -4,6 +4,7 @@ import { LuHand } from 'react-icons/lu';
 import ColorPickerButton from './ColorPickerButton';
 import SearchBar from './SearchBar';
 import { useColor } from './ColorContext';
+import ZoomDisplay from './ZoomDisplay';
 
 function Toolbar({ 
   currentTool, 
@@ -11,7 +12,8 @@ function Toolbar({
   onFileUpload, 
   isObjectSelected,
   onDeleteSelected,
-  fabricCanvas
+  fabricCanvas,
+  zoom
 }) {
   const fileInputRef = useRef(null);
   const { currentColor, changeColor } = useColor();
@@ -69,6 +71,7 @@ function Toolbar({
         currentColor={currentColor} 
         setCurrentColor={changeColor}
       />
+      <ZoomDisplay zoom={zoom} />
     </div>
   );
 }

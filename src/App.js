@@ -8,6 +8,7 @@ import { ColorProvider, useColor } from './components/ColorContext';
 
 function AppContent() {
   const [currentTool, setCurrentTool] = useState('select');
+  const [zoom, setZoom] = useState(1);
   const [showColorPalette, setShowColorPalette] = useState(false);
   const [fabricCanvas, setFabricCanvas] = useState(null);
   const canvasRef = useRef(null);
@@ -54,6 +55,7 @@ function AppContent() {
         fabricCanvas={fabricCanvas}
         currentTool={currentTool}
         setCurrentTool={setCurrentTool}
+        onZoomChange={setZoom}
       />
       <Toolbar
         fabricCanvas={fabricCanvas}
@@ -62,11 +64,7 @@ function AppContent() {
         onFileUpload={handleFileUpload}
         isObjectSelected={isObjectSelected()}
         onDeleteSelected={handleDeleteSelected}
-      />
-      <DraggableColorPalette
-        isVisible={showColorPalette}
-        currentColor={currentColor}
-        setCurrentColor={changeColor}
+        zoom={zoom}
       />
     </div>
   );

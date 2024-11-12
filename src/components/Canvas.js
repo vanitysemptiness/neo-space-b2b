@@ -5,14 +5,14 @@ import Selection from './Selection';
 import TextboxTool from './Textbox';
 import Camera from './Camera';
 
-const Canvas = forwardRef(({ currentTool, setCurrentTool, fabricCanvas }, ref) => {
+const Canvas = forwardRef(({ currentTool, setCurrentTool, fabricCanvas, onZoomChange }, ref) => {
   const canvasRef = useRef(null);
   const [cameraState, setCameraState] = useState({ zoom: 1, panX: 0, panY: 0 });
 
   useEffect(() => {
     if (fabricCanvas && canvasRef.current) {
       fabricCanvas.initialize(canvasRef.current);
-      
+
       const handleResize = () => {
         fabricCanvas.setDimensions({
           width: window.innerWidth,
@@ -57,22 +57,23 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool, fabricCanvas }, ref) =
       <canvas ref={canvasRef} />
       {fabricCanvas && (
         <>
-          <Camera 
-            fabricCanvas={fabricCanvas} 
+          <Camera
+            fabricCanvas={fabricCanvas}
             currentTool={currentTool}
-            onCameraUpdate={setCameraState}
+            onCameraUpdate={setCameraState}  // For grid and panning
+            onZoomChange={onZoomChange}      // For zoom display
           />
-          <Square 
-            fabricCanvas={fabricCanvas} 
+          <Square
+            fabricCanvas={fabricCanvas}
             currentTool={currentTool}
             setCurrentTool={setCurrentTool}
           />
-          <Drawing 
-            fabricCanvas={fabricCanvas} 
+          <Drawing
+            fabricCanvas={fabricCanvas}
             currentTool={currentTool}
           />
-          <Selection 
-            fabricCanvas={fabricCanvas} 
+          <Selection
+            fabricCanvas={fabricCanvas}
             currentTool={currentTool}
           />
           <TextboxTool
