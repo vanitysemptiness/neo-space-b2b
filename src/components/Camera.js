@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { fabric } from 'fabric';
 
-const Camera = ({ fabricCanvas, currentTool }) => {
-  const [zoom, setZoom] = useState(1);
+const Camera = ({ fabricCanvas, currentTool, onCameraUpdate }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [lastPointer, setLastPointer] = useState(null);
-  const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
+
+  const updateCameraState = useCallback(() => {
+    if (!fabricCanvas) return;
+    onCameraUpdate({
+      zoom: fabricCanvas.getZoom(),
+      panX: fabricCanvas.viewportTransform[4],
+      panY: fabricCanvas.viewportTransform[5]
+    });
+  }, [fabricCanvas, onCameraUpdate]);
 
   const handleWheel = useCallback((opt) => {
     if (!fabricCanvas) return;
@@ -20,8 +27,8 @@ const Camera = ({ fabricCanvas, currentTool }) => {
 
     const point = new fabric.Point(opt.pointer.x, opt.pointer.y);
     fabricCanvas.zoomToPoint(point, newZoom);
-    setZoom(newZoom);
-  }, [fabricCanvas]);
+    updateCameraState();
+  }, [fabricCanvas, updateCameraState]);
 
   const handleMouseDown = useCallback((opt) => {
     if (!fabricCanvas || currentTool !== 'hand') return;
@@ -45,14 +52,10 @@ const Camera = ({ fabricCanvas, currentTool }) => {
     
     fabricCanvas.setViewportTransform(vpt);
     fabricCanvas.requestRenderAll();
-
-    setPanPosition({
-      x: vpt[4],
-      y: vpt[5]
-    });
+    updateCameraState();
     
     setLastPointer(currentPointer);
-  }, [fabricCanvas, isDragging, lastPointer, currentTool]);
+  }, [fabricCanvas, isDragging, lastPointer, currentTool, updateCameraState]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -91,21 +94,6 @@ const Camera = ({ fabricCanvas, currentTool }) => {
     handleMouseMove,
     handleMouseUp
   ]);
-
-  // Methods that could be exposed via ref if needed
-  const zoomTo = (scale) => {
-    if (!fabricCanvas) return;
-    fabricCanvas.setZoom(scale);
-    fabricCanvas.renderAll();
-    setZoom(scale);
-  };
-
-  const panTo = (x, y) => {
-    if (!fabricCanvas) return;
-    fabricCanvas.absolutePan({ x, y });
-    fabricCanvas.renderAll();
-    setPanPosition({ x, y });
-  };
 
   return null;
 };
