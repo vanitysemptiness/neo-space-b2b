@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
-import { FiMousePointer, FiEdit2, FiUpload, FiSquare, FiTrash2, FiType, FiMove } from 'react-icons/fi';
+import { FiMousePointer, FiEdit2, FiUpload, FiSquare, FiTrash2, FiType } from 'react-icons/fi';
+import { LuHand } from 'react-icons/lu';
 import ColorPickerButton from './ColorPickerButton';
 import SearchBar from './SearchBar';
 import { useColor } from './ColorContext';
@@ -21,7 +22,7 @@ function Toolbar({
   };
 
   const tools = [
-    { name: 'hand', icon: <FiMove size={20} /> },
+    { name: 'hand', icon: <LuHand size={20} /> },
     { name: 'select', icon: <FiMousePointer size={20} /> },
     { name: 'draw', icon: <FiEdit2 size={20} /> },
     { name: 'square', icon: <FiSquare size={20} /> },

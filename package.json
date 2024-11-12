@@ -15,6 +15,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
     "@melloware/coloris": "^0.21.1",
+    "@tabler/icons-react": "^3.21.0",
     "fabric": "^5.3.1",
     "gifuct-js": "^2.1.2",
     "html2canvas": "^1.4.1",
