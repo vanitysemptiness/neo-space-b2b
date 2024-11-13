@@ -5,6 +5,7 @@ import ColorPickerButton from './ColorPickerButton';
 import SearchBar from './SearchBar';
 import { useColor } from './ColorContext';
 import ZoomDisplay from './ZoomDisplay';
+import SaveFileButtons from '../components/SaveFileButtons';
 
 function Toolbar({ 
   currentTool, 
@@ -67,6 +68,7 @@ function Toolbar({
         onChange={handleFileChange}
         accept=".png,.jpg,.jpeg,.gif,.csv,.pdf,.mov,.xls,.xlsx"
       />
+      <SaveFileButtons fabricCanvas={fabricCanvas} />
       <ColorPickerButton 
         currentColor={currentColor} 
         setCurrentColor={changeColor}
