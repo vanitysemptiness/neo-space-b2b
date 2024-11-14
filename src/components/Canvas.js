@@ -16,43 +16,7 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool, fabricCanvas, onZoomCh
   // Configure selection controls and styles
   useEffect(() => {
     if (fabricCanvas) {
-      // Create a custom control handler that combines scaling and stretching
-      const createSmartControlHandler = (corner) => {
-        return function(eventData, transform, x, y) {
-          // Get the original mousedown point and current transform point
-          if (!transform.original) return true;
-          
-          const mouseDownPoint = transform.originX;
-          const currentPoint = transform.target.toLocalPoint(new fabric.Point(x, y), 'center', 'center');
-          
-          // Calculate the total movement from original position
-          const movementX = Math.abs(currentPoint.x - mouseDownPoint);
-          const movementY = Math.abs(currentPoint.y - mouseDownPoint);
-          
-          // Determine if the movement is more horizontal, vertical, or diagonal
-          const threshold = 5;
-          const isHorizontal = movementX > threshold && movementY < threshold;
-          const isVertical = movementY > threshold && movementX < threshold;
-          
-          if (isHorizontal) {
-            // Horizontal stretch - maintain original height
-            transform.newScaleX = transform.scaleX;
-            transform.newScaleY = transform.original.scaleY;
-          } else if (isVertical) {
-            // Vertical stretch - maintain original width
-            transform.newScaleX = transform.original.scaleX;
-            transform.newScaleY = transform.scaleY;
-          } else {
-            // Diagonal movement - scale proportionally
-            transform.newScaleX = transform.scaleX;
-            transform.newScaleY = transform.scaleY;
-          }
-          
-          return true;
-        };
-      };
-
-      // Disable middle and rotation controls
+      // Disable rotation control and middle controls
       fabric.Object.prototype.setControlsVisibility({
         mtr: false,  // middle top rotation
         ml: false,   // middle left
@@ -61,35 +25,31 @@ const Canvas = forwardRef(({ currentTool, setCurrentTool, fabricCanvas, onZoomCh
         mb: false    // middle bottom
       });
 
-      // Set up corner controls with custom handlers
+      // Set up corner controls with default handlers
       fabric.Object.prototype.controls = {
         tl: new fabric.Control({
           x: -0.5,
           y: -0.5,
-          actionHandler: createSmartControlHandler('tl'),
-          cursorStyleHandler: fabric.controlsUtils.scaleCursorStyleHandler,
-          actionName: 'scale'
+          actionHandler: fabric.controlsUtils.scalingEqually,
+          cursorStyle: 'nw-resize'
         }),
         tr: new fabric.Control({
           x: 0.5,
           y: -0.5,
-          actionHandler: createSmartControlHandler('tr'),
-          cursorStyleHandler: fabric.controlsUtils.scaleCursorStyleHandler,
-          actionName: 'scale'
+          actionHandler: fabric.controlsUtils.scalingEqually,
+          cursorStyle: 'ne-resize'
         }),
         bl: new fabric.Control({
           x: -0.5,
           y: 0.5,
-          actionHandler: createSmartControlHandler('bl'),
-          cursorStyleHandler: fabric.controlsUtils.scaleCursorStyleHandler,
-          actionName: 'scale'
+          actionHandler: fabric.controlsUtils.scalingEqually,
+          cursorStyle: 'sw-resize'
         }),
         br: new fabric.Control({
           x: 0.5,
           y: 0.5,
-          actionHandler: createSmartControlHandler('br'),
-          cursorStyleHandler: fabric.controlsUtils.scaleCursorStyleHandler,
-          actionName: 'scale'
+          actionHandler: fabric.controlsUtils.scalingEqually,
+          cursorStyle: 'se-resize'
         })
       };
 
