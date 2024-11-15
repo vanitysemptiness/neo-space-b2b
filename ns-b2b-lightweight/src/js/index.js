@@ -3,15 +3,20 @@ import 'prismjs/themes/prism-tomorrow.css';
 import { initCanvas, addNodeToCanvas } from './canvas.js';
 import { createNode } from './nodes.js';
 import { edges } from './edges.js';
+import { setupFileHandlers } from './saving.js';
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize canvas
     initCanvas();
     
+    //TODO: get rid of the add simple node flow
     // Add sample node
-    const node = createNode(100, 100);
-    addNodeToCanvas(node);
+    // const node = createNode(100, 100);
+    // addNodeToCanvas(node);
+
+    // setup the save and load canvas handlers
+    setupFileHandlers();
     
     // Add node button handler
     document.getElementById('add-node')?.addEventListener('click', () => {

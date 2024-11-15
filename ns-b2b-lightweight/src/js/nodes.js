@@ -1,17 +1,39 @@
-import { state, setDragging, setStartPosition, setSelectedElement } from './state.js';
+import { state, addNode, updateNodePosition, setDragging, setStartPosition, setSelectedElement } from './state.js';
 import { updateCanvasData } from './index.js';
 import { drawEdges } from './edges.js';
 
-// Create a new node
 export function createNode(x = window.innerWidth/2, y = window.innerHeight/2) {
+    const nodeId = 'node' + Date.now();
     const node = document.createElement('div');
-    node.id = 'node' + Date.now();
+    node.id = nodeId;
     node.className = 'node node-text';
     node.setAttribute('data-node-type', 'text');
-    node.style.left = x + 'px';
-    node.style.top = y + 'px';
-    node.style.width = '480px'; // Set default width
+    node.style.left = `${x}px`;
+    node.style.top = `${y}px`;
+    node.style.width = '480px';
     node.style.position = 'absolute';
+    
+    // Add node to state tracking
+    addNode(nodeId, {
+        id: nodeId,
+        type: 'text',
+        screenX: x,
+        screenY: y,
+        canvasX: (x - state.panOffsetX) / state.scale,
+        canvasY: (y - state.panOffsetY) / state.scale,
+        width: 480,
+        height: 0, // Will be set after render
+        content: {
+            title: 'New Node',
+            text: '<p>Click to edit text</p>',
+            lastEdited: new Date().toISOString()
+        },
+        metadata: {
+            created: new Date().toISOString(),
+            style: {},
+            tags: []
+        }
+    });
     
     const nodeName = document.createElement('div');
     nodeName.className = 'node-name';
@@ -34,6 +56,19 @@ export function createNode(x = window.innerWidth/2, y = window.innerHeight/2) {
         e.preventDefault();
         const text = e.clipboardData.getData('text/plain');
         document.execCommand('insertText', false, text);
+    });
+
+    nodeContent.addEventListener('input', () => {
+        const node = state.nodes.get(nodeId);
+        if (node) {
+            node.content = {
+                title: nodeName.textContent,
+                text: nodeContent.innerHTML,
+                lastEdited: new Date().toISOString()
+            };
+            state.nodes.set(nodeId, node);
+            updateCanvasData();
+        }
     });
 
     // Add resize handles
@@ -69,9 +104,12 @@ export function createNode(x = window.innerWidth/2, y = window.innerHeight/2) {
         if (newWidth >= 200 && newWidth <= 800) {
             node.style.width = `${newWidth}px`;
             if (side === -1) {
-                node.style.left = `${parseInt(node.style.left) + (dx)}px`;
+                const newX = parseInt(node.style.left) + (dx);
+                node.style.left = `${newX}px`;
+                updateNodePosition(nodeId, newX, parseInt(node.style.top));
             }
             drawEdges();
+            updateCanvasData();
         }
     });
 
@@ -110,6 +148,7 @@ export function createNode(x = window.innerWidth/2, y = window.innerHeight/2) {
     deleteBtn.onclick = (e) => {
         e.stopPropagation();
         node.remove();
+        state.nodes.delete(nodeId);
         updateCanvasData();
         drawEdges();
     };
@@ -140,9 +179,13 @@ function setupNodeDrag(handle, node) {
         const dx = (e.clientX - state.startX) / state.scale;
         const dy = (e.clientY - state.startY) / state.scale;
 
-        state.selectedElement.style.left = `${parseInt(state.selectedElement.style.left, 10) + dx}px`;
-        state.selectedElement.style.top = `${parseInt(state.selectedElement.style.top, 10) + dy}px`;
-
+        const newX = parseInt(state.selectedElement.style.left) + dx;
+        const newY = parseInt(state.selectedElement.style.top) + dy;
+        
+        state.selectedElement.style.left = `${newX}px`;
+        state.selectedElement.style.top = `${newY}px`;
+        
+        updateNodePosition(state.selectedElement.id, newX, newY);
         setStartPosition(e.clientX, e.clientY);
         drawEdges();
     });

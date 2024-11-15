@@ -10,7 +10,9 @@ export const state = {
     startX: 0,
     startY: 0,
     panStartX: 0,
-    panStartY: 0
+    panStartY: 0,
+    nodes: new Map(), // Track node data
+    edges: []  // Track edges
 };
 
 // Constants
@@ -52,4 +54,41 @@ export function setPanStartPosition(x, y) {
 
 export function setSelectedElement(element) {
     state.selectedElement = element;
+}
+
+export function updateNodePosition(nodeId, screenX, screenY) {
+    const node = state.nodes.get(nodeId);
+    if (node) {
+        node.screenX = screenX;
+        node.screenY = screenY;
+        node.canvasX = (screenX - state.panOffsetX) / state.scale;
+        node.canvasY = (screenY - state.panOffsetY) / state.scale;
+        state.nodes.set(nodeId, node);
+    }
+}
+
+export function updateNodeContent(nodeId, title, content) {
+    const node = state.nodes.get(nodeId);
+    if (node) {
+        node.title = title;
+        node.content = content;
+        state.nodes.set(nodeId, node);
+    }
+}
+
+export function addNode(nodeId, screenX, screenY) {
+    state.nodes.set(nodeId, {
+        id: nodeId,
+        screenX,
+        screenY,
+        canvasX: (screenX - state.panOffsetX) / state.scale,
+        canvasY: (screenY - state.panOffsetY) / state.scale,
+        title: 'New Node',
+        content: '<p>Click to edit text</p>',
+        type: 'text'
+    });
+}
+
+export function getNodeCanvasPosition(nodeId) {
+    return state.nodes.get(nodeId);
 }

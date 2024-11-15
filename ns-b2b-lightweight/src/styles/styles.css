@@ -93,6 +93,12 @@
     overflow: hidden;
     background-position: calc(var(--pan-x) - 19px) calc(var(--pan-y) - 19px);
 }
+
+#canvas-container.drag-over {
+  outline: 2px dashed var(--color-ui-3);
+  outline-offset: -2px;
+}
+
   #canvas-edges,
   #canvas-nodes {
     opacity: 0;
@@ -262,6 +268,7 @@
     -webkit-tap-highlight-color: rgba(0,0,0,0);
     position: absolute;
     display: block;
+    transform-origin: top left;
   }
   .node.is-active {
     box-shadow:

@@ -1,0 +1,29 @@
+{
+    "version": "1.0",
+    "timestamp": "2024-11-15T12:00:00.000Z",
+    "viewport": {
+      "scale": 1,
+      "panOffset": { "x": 0, "y": 0 }
+    },
+    "nodes": [
+      {
+        "id": "node1234567890",
+        "type": "text",
+        "position": { "x": 100, "y": 200 },
+        "dimensions": { "width": 480, "height": 200 },
+        "content": {
+          "title": "Node Title",
+          "text": "<p>Node content</p>"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "fromNode": "node1234567890",
+        "toNode": "node0987654321",
+        "fromSide": "right",
+        "toSide": "left",
+        "toEnd": "arrow"
+      }
+    ]
+  }
