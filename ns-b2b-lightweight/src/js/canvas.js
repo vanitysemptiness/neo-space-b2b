@@ -44,23 +44,36 @@ function updateCanvasVisibility() {
 function setupZoom() {
     window.addEventListener('wheel', (e) => {
         if (e.ctrlKey || e.metaKey) {
-            if (e.deltaY > 0) {
-                setScale(state.scale - ZOOM_SPEED);
-            } else {
-                setScale(state.scale + ZOOM_SPEED);
-            }
-            applyTransform();
             e.preventDefault();
+            
+            // Calculate zoom center point
+            const rect = document.getElementById('canvas-container').getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // More gradual zoom speed
+            const zoomDelta = e.deltaY * -0.001;
+            const newScale = Math.min(Math.max(state.scale * (1 + zoomDelta), minScale), maxScale);
+            const scaleFactor = newScale / state.scale;
+            
+            // Adjust pan offset to zoom toward cursor
+            const newPanX = state.panOffsetX + (x - state.panOffsetX) * (1 - scaleFactor);
+            const newPanY = state.panOffsetY + (y - state.panOffsetY) * (1 - scaleFactor);
+            
+            setScale(newScale);
+            setPanOffset(newPanX, newPanY);
+            applyTransform();
+            drawEdges();
         }
     }, { passive: false });
 
     document.getElementById('zoom-in')?.addEventListener('click', () => {
-        setScale(state.scale + ZOOM_SPEED);
+        setScale(state.scale * 1.2);
         applyTransform();
     });
 
     document.getElementById('zoom-out')?.addEventListener('click', () => {
-        setScale(state.scale - ZOOM_SPEED);
+        setScale(state.scale / 1.2);
         applyTransform();
     });
 
@@ -73,44 +86,41 @@ function setupZoom() {
 
 // Pan setup and handlers
 function setupPan() {
-    window.addEventListener('keydown', (e) => {
-        if (e.code === 'Space') {
-            e.preventDefault();
-            setSpacePressed(true);
-            document.body.classList.add('will-pan');
-        }
-    });
+    const container = document.getElementById('canvas-container');
+    let isPanning = false;
+    let startX = 0;
+    let startY = 0;
+    let initialPanX = 0;
+    let initialPanY = 0;
 
-    window.addEventListener('keyup', (e) => {
-        if (e.code === 'Space') {
-            setSpacePressed(false);
-            document.body.classList.remove('will-pan');
-        }
-    });
-
-    window.addEventListener('mousedown', (e) => {
-        if (state.isSpacePressed && !state.isDragging) {
-            setPanning(true);
-            document.body.style.cursor = 'grabbing';
-            setPanStartPosition(e.clientX - state.panOffsetX, e.clientY - state.panOffsetY);
+    container.addEventListener('mousedown', (e) => {
+        if (e.target === container) {
+            isPanning = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initialPanX = state.panOffsetX;
+            initialPanY = state.panOffsetY;
+            container.style.cursor = 'grabbing';
         }
     });
 
     window.addEventListener('mousemove', (e) => {
-        if (state.isPanning) {
+        if (isPanning) {
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            
             setPanOffset(
-                e.clientX - state.panStartX,
-                e.clientY - state.panStartY
+                initialPanX + dx,
+                initialPanY + dy
             );
+            
             applyTransform();
         }
     });
 
     window.addEventListener('mouseup', () => {
-        if (state.isPanning) {
-            setPanning(false);
-            document.body.style.cursor = '';
-        }
+        isPanning = false;
+        container.style.cursor = '';
     });
 }
 
