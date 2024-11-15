@@ -88,11 +88,11 @@
     padding: 0;
     position: relative;
     background-color: var(--color-bg-2);
-    background-image: radial-gradient(var(--color-ui-1) calc(var(--scale)*0.5px + 0.5px), transparent 0);
+    background-image: radial-gradient(#a5d8ff calc(var(--scale)*0.5px + 0.5px), transparent 0);
     background-size: calc(var(--scale) * 20px) calc(var(--scale) * 20px);
     overflow: hidden;
     background-position: calc(var(--pan-x) - 19px) calc(var(--pan-y) - 19px);
-  }
+}
   #canvas-edges,
   #canvas-nodes {
     opacity: 0;
