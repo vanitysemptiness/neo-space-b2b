@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Interactive Canvas</title>
+    <link rel="stylesheet" href="styles/styles.css">
+</head>
+<body class="hidenav">
+    <div id="home">
+        <div id="container">
+            <div id="canvas-container">
+                <svg id="canvas-edges">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                        refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" />
+                        </marker>
+                    </defs>
+                    <g id="edge-paths"></g>
+                </svg>
+                
+                <div id="canvas-nodes">
+                    <!-- Nodes will be added here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div id="controls">
+            <button id="add-node" title="Add node">+ Node</button>
+            <button id="zoom-out" title="Zoom out">−</button>
+            <button id="zoom-reset" title="Reset zoom">Reset</button>
+            <button id="zoom-in" title="Zoom in">+</button>
+            <button id="toggle-output" title="Toggle JSON">{ }</button>
+        </div>
+
+        <!-- Output panel -->
+        <div id="output" class="hidden">
+            <div class="code-header">
+                <span class="language">Canvas Data</span>
+                <span class="close-output">×</span>
+            </div>
+            <div id="output-code">
+                <pre><code id="positionsOutput" class="language-json"></code></pre>
+            </div>
+            <div class="code-footer">
+                <button class="button-copy">Copy</button>
+                <button class="button-download">Download</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/index.js"></script>
+</body>
+</html>

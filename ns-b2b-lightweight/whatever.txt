@@ -1,0 +1,14 @@
+infinite-canvas/
+├── node_modules/          # Created after npm install
+├── dist/                  # Created after npm run build
+├── src/
+│   ├── js/
+│   │   ├── index.js      # Main JavaScript entry point
+│   │   └── canvas.js     # Canvas manipulation logic
+│   ├── styles/
+│   │   └── styles.css    # All CSS styles
+│   └── index.html        # Main HTML file
+├── .gitignore            # Git ignore file
+├── package.json          # Project configuration
+├── package-lock.json     # Created after npm install
+└── vite.config.js        # Vite configuration
