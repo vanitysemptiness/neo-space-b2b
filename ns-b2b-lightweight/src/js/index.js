@@ -1,33 +1,30 @@
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-tomorrow.css';
-import { initCanvas, addNodeToCanvas } from './canvas.js';
-import { createNode } from './nodes.js';
+import { initCanvas, addNodeToCanvas, adjustCanvasToViewport } from './canvas.js';
+import { TextboxNode } from './nodes.js';
 import { edges } from './edges.js';
-import { setupFileHandlers } from './saving.js';
+import { state } from './state.js';
+
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize canvas
     initCanvas();
     
-    //TODO: get rid of the add simple node flow
-    // Add sample node
-    // const node = createNode(100, 100);
-    // addNodeToCanvas(node);
-
-    // setup the save and load canvas handlers
-    setupFileHandlers();
-    
     // Add node button handler
     document.getElementById('add-node')?.addEventListener('click', () => {
-        const node = createNode();
+        const node = new TextboxNode().element;
         addNodeToCanvas(node);
     });
 
-    // Double click to add node
+    // Double click to add node - ensure we're not creating duplicates
     document.getElementById('canvas-container')?.addEventListener('dblclick', (e) => {
         if (e.target === document.getElementById('canvas-container')) {
-            const node = createNode();
+            e.preventDefault(); // Prevent any double-click selection
+            const node = new TextboxNode(
+                (e.clientX - state.panOffsetX) / state.scale,
+                (e.clientY - state.panOffsetY) / state.scale
+            ).element;
             addNodeToCanvas(node);
         }
     });
@@ -59,6 +56,51 @@ document.addEventListener('DOMContentLoaded', () => {
             URL.revokeObjectURL(url);
         }
     });
+
+    // Hot key handlers
+    window.addEventListener('keydown', (e) => {
+        // Undo/Redo
+        if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+            if (e.shiftKey) {
+                // Redo
+                e.preventDefault();
+                // Implement redo functionality
+            } else {
+                // Undo
+                e.preventDefault();
+                // Implement undo functionality
+            }
+        }
+
+        // Delete/Backspace
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            const selectedNode = document.querySelector('.node.is-selected');
+            if (selectedNode && !e.target.isContentEditable) {
+                e.preventDefault();
+                selectedNode.remove();
+                updateCanvasData();
+            }
+        }
+
+        // Space for panning
+        if (e.code === 'Space' && !e.repeat && !e.target.isContentEditable) {
+            e.preventDefault();
+            document.getElementById('canvas-container').style.cursor = 'grab';
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        if (e.code === 'Space') {
+            document.getElementById('canvas-container').style.cursor = '';
+        }
+    });
+
+    // Prevent space bar from scrolling
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && e.target === document.body) {
+            e.preventDefault();
+        }
+    });
 });
 
 // Export the update function for other modules
@@ -82,3 +124,25 @@ export function updateCanvasData() {
         Prism.highlightElement(positionsOutput);
     }
 }
+
+// Initialize key handlers for space bar
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !e.repeat && !e.target.isContentEditable) {
+        state.isSpacePressed = true;
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') {
+        state.isSpacePressed = false;
+    }
+});
+
+// Auto-adjust canvas on window resize
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        adjustCanvasToViewport();
+    }, 250);
+});
