@@ -196,11 +196,6 @@ export class Node {
     }
 }
 
-// For backwards compatibility
-export function createNode(x, y) {
-    return new TextboxNode(x, y).element;
-}
-
 export class TextboxNode extends Node {
     constructor(x, y) {
         super(x, y);
