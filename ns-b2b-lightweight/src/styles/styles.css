@@ -15,7 +15,7 @@
     --color-ui-2: #bbb;
     --color-ui-3: #5E0641;
     --color-ax-1: #8B0A5F;
-  
+    --grid-dot-color: #a5d8ff;
     --color-selection: rgba(139,10,95,0.15);
   }
   
@@ -30,6 +30,7 @@
     --color-ax-1: #8B0A5F;
   
     --color-selection: rgba(139,10,95,0.5);
+    --grid-dot-color: rgba(255, 255, 255, 0.1);
   }
   
   *, *:before, *:after {
@@ -88,7 +89,7 @@
     padding: 0;
     position: relative;
     background-color: var(--color-bg-2);
-    background-image: radial-gradient(#a5d8ff calc(var(--scale)*0.5px + 0.5px), transparent 0);
+    background-image: radial-gradient(var(--grid-dot-color) calc(var(--scale)*0.5px + 0.5px), transparent 0);
     background-size: calc(var(--scale) * 20px) calc(var(--scale) * 20px);
     overflow: hidden;
     background-position: calc(var(--pan-x) - 19px) calc(var(--pan-y) - 19px);
